@@ -2,27 +2,15 @@ import { GraphQLClient } from "graphql-request";
 import express, { Request, Response, NextFunction } from "express";
 import { env } from "./environment";
 import {
-  GithubProject,
+  GithubRepository,
   pinnedGithubReposRequest,
-  PinnedRepositories,
-} from "./app.model";
+  GithubPinnedRepositories,
+  createGithubRepoResponse,
+} from "./index.model";
 import path from "path";
 import { Buffer } from "buffer";
 import axios from "axios";
 import morgan from "morgan";
-
-function sortedRepos(githubRepos: GithubProject[], pinned: PinnedRepositories) {
-  return githubRepos
-    .map((githubRepo) => ({
-      ...githubRepo,
-      pinned: pinned.user.pinnedItems.nodes
-        .map((p) => p.name)
-        .includes(githubRepo.name),
-    }))
-    .sort((repo1, repo2) => {
-      return (repo1.pinned ? 1 : -1) - (repo2.pinned ? 1 : -1);
-    });
-}
 
 function error(resp: Response, status: number, message: string) {
   return resp.status(status).json({
@@ -36,7 +24,9 @@ function setHeaders(_request: Request, response: Response, next: NextFunction) {
 }
 
 (async function main() {
-  const api = express();
+  const api = express(),
+    DIST_DIR = __dirname,
+    HTML_FILE = path.join(DIST_DIR, "index.html");
 
   api.use(setHeaders, morgan("[:date[web]] - [:method] :url [:status]"));
 
@@ -48,24 +38,30 @@ function setHeaders(_request: Request, response: Response, next: NextFunction) {
   });
 
   api.get("/", (_request: Request, response: Response) => {
-    response.sendFile(path.join(__dirname, "../public/index.html"));
+    response.sendFile(HTML_FILE);
   });
 
   api.get("/repos", (_request: Request, response: Response) => {
     axios
-      .get<GithubProject[]>(`${env.githubApi}/users/${env.githubLogin}/repos`)
+      .get<GithubRepository[]>(
+        `${env.githubApi}/users/${env.githubLogin}/repos`
+      )
       .then((githubRepos) => {
-        client.request<PinnedRepositories>(pinnedGithubReposRequest).then(
-          (pinnedGithubRepos) => {
-            response
-              .status(200)
-              .json(sortedRepos(githubRepos.data, pinnedGithubRepos));
-          },
-          (rejection) => {
-            response.json(JSON.stringify(rejection));
-            error(response, 500, rejection);
-          }
-        );
+        client
+          .request<GithubPinnedRepositories>(pinnedGithubReposRequest(10))
+          .then(
+            (pinnedGithubRepos) => {
+              response
+                .status(200)
+                .json(
+                  createGithubRepoResponse(githubRepos.data, pinnedGithubRepos)
+                );
+            },
+            (rejection) => {
+              response.json(JSON.stringify(rejection));
+              error(response, 500, rejection);
+            }
+          );
       });
   });
 
