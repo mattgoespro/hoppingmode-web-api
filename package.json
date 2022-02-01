@@ -5,7 +5,9 @@
   "scripts": {
     "start": "webpack-dev-server --mode development --port 3000",
     "start:prod": "webpack-dev-server --mode production --port 4000",
-    "build": "rm -rf dist && webpack --mode production"
+    "build": "rm -rf dist && webpack --mode production",
+    "build:docker": "docker build . -t hoppingmode/github-api",
+    "start:docker": "docker run -d -p 8080:3000 hoppingmode/github-api"
   },
   "author": "hoppingmode",
   "dependencies": {
