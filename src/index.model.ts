@@ -13,7 +13,6 @@ export interface GithubRepository {
   name: string;
   full_name: string;
   description: string;
-  pinned: boolean;
   created_at: string;
   updated_at: string;
   html_url: string;
@@ -37,17 +36,17 @@ export function pinnedGithubReposRequest(numItems: number) {
 
 export interface GithubRepositories {
   repositories: GithubRepository[];
-  pinnedRepositories: GithubRepository[];
+  pinnedRepositories?: GithubRepository[];
 }
 
 export function createGithubRepoResponse(
   repositories: GithubRepository[],
-  pinnedRepositories: GithubPinnedRepositories
+  pinnedRepositories?: GithubPinnedRepositories
 ): GithubRepositories {
   return {
     repositories: repositories,
     pinnedRepositories: repositories.filter((repo) =>
-      pinnedRepositories.user.pinnedItems.nodes
+      pinnedRepositories?.user.pinnedItems.nodes
         .map((n) => n.name)
         .includes(repo.full_name)
     ),
