@@ -38,10 +38,11 @@ function setHeaders(_request: Request, response: Response, next: NextFunction) {
   });
 
   api.get("/", (_request: Request, response: Response) => {
-    response.sendFile(HTML_FILE);
+    // response.sendFile(HTML_FILE); // TODO: Not working with webpack.
   });
 
   api.get("/repos", (_request: Request, response: Response) => {
+    console.log(`${env.githubApi}/users/${env.githubLogin}/repos`);
     axios
       .get<GithubRepository[]>(
         `${env.githubApi}/users/${env.githubLogin}/repos`
@@ -49,42 +50,53 @@ function setHeaders(_request: Request, response: Response, next: NextFunction) {
       .then((githubRepos) => {
         client
           .request<GithubPinnedRepositories>(pinnedGithubReposRequest(10))
-          .then(
-            (pinnedGithubRepos) => {
-              response
-                .status(200)
-                .json(
-                  createGithubRepoResponse(githubRepos.data, pinnedGithubRepos)
-                );
-            },
-            (rejection) => {
-              response.json(JSON.stringify(rejection));
-              error(response, 500, rejection);
-            }
-          );
+          .then((pinnedGithubRepos) => {
+            response
+              .status(200)
+              .json(
+                createGithubRepoResponse(githubRepos.data, pinnedGithubRepos)
+              );
+          })
+          .catch((err) => {
+            error(response, 500, err);
+          });
+      })
+      .catch(() => {
+        error(response, 500, `Unable to fetch projects. Please try again.`);
       });
   });
 
   api.get("/repos/:name/languages", (request: Request, response: Response) => {
+    console.log(`${env.githubApi}/repos/${request.params.name}/languages`);
     axios
       .get<{ [key: string]: number }>(
-        `${env.githubApi}/${encodeURIComponent(request.params.name)}/languages`
+        `${env.githubApi}/repos/${request.params.name}/languages`
       )
       .then((languages) => {
         response.status(200).json(languages);
-      });
+      })
+      .catch(() =>
+        error(
+          response,
+          500,
+          `Unable to fetch languages for project '${request.params.name}'`
+        )
+      );
   });
 
   api.get("/repos/:name/readme", (request: Request, response: Response) => {
+    console.log(`${env.githubApi}/repos/
+          ${request.params.name}
+        /contents/README.md`);
     axios
       .get<{ content: string }>(
-        `${env.githubApi}/repos/${env.githubLogin}/${encodeURIComponent(
-          request.params.name
-        )}/contents/README.md`
+        `${env.githubApi}/repos/
+          ${request.params.name}
+        /contents/README.md`
       )
       .then((rsp) => {
         if (rsp.status === 404) {
-          error(response, 404, "No Readme found");
+          response.status(200).send("");
         } else if (rsp.status === 200) {
           const readmePayload = Buffer.from(
             rsp.data.content,
@@ -98,6 +110,13 @@ function setHeaders(_request: Request, response: Response, next: NextFunction) {
             "An unexpected error occurred. Please try again."
           );
         }
+      })
+      .catch(() => {
+        error(
+          response,
+          500,
+          `Unable to fetch readme for project '${request.params.name}'`
+        );
       });
   });
 
@@ -105,8 +124,6 @@ function setHeaders(_request: Request, response: Response, next: NextFunction) {
     console.log("=".repeat(50));
     console.log("=");
     console.log(`=   API listening on port ${env.port}...`);
-    console.log("=");
-    console.log("=   Open in browser: http://localhost:3000/");
     console.log("=");
     console.log("=".repeat(50));
   });
