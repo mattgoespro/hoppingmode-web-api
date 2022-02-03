@@ -13,7 +13,6 @@ import moment from "moment";
 
 interface ErrorResponse {
   status: number;
-  cause: any;
   message: string;
 }
 
@@ -24,8 +23,7 @@ function respondError(
   alternateResponseStatus?: number
 ) {
   const errorResponse: ErrorResponse = {
-    status: error?.status ?? alternateResponseStatus ?? 500,
-    cause: !error || error === {} ? "Unknown" : error,
+    status: error.response?.status ?? alternateResponseStatus ?? 500,
     message,
   };
   return respond.status(errorResponse.status).json(errorResponse);
@@ -50,7 +48,7 @@ export function main() {
   });
 
   api.get("/", (_request: Request, response: Response) => {
-    // response.sendFile(HTML_FILE); // TODO: Not working with webpack.
+    response.send("Hello, this is dog.");
   });
 
   api.get("/repos", async (_request: Request, respond: Response) => {
@@ -90,9 +88,7 @@ export function main() {
   api.get("/repos/:name/readme", (request: Request, respond: Response) => {
     axios
       .get<{ content: string }>(
-        `${env.githubApi}/repos/${env.githubLogin}/
-          ${request.params.name}
-        /contents/README.md`
+        `${env.githubApi}/repos/${env.githubLogin}/${request.params.name}/contents/README.md`
       )
       .then((rsp: { data: { content: any }; status: number }) => {
         let payload = rsp.data.content;
