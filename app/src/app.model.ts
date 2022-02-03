@@ -1,5 +1,5 @@
 import { gql } from "graphql-request";
-import { env } from "./environment";
+import { env } from "../environment";
 
 export interface GithubPinnedRepositories {
   user: {
@@ -36,17 +36,17 @@ export function pinnedGithubReposRequest(numItems: number) {
 
 export interface GithubRepositories {
   repositories: GithubRepository[];
-  pinnedRepositories?: GithubRepository[];
+  pinnedRepositories: GithubRepository[];
 }
 
 export function createGithubRepoResponse(
   repositories: GithubRepository[],
-  pinnedRepositories?: GithubPinnedRepositories
+  pinnedRepositories: GithubPinnedRepositories
 ): GithubRepositories {
   return {
     repositories: repositories,
     pinnedRepositories: repositories.filter((repo) =>
-      pinnedRepositories?.user.pinnedItems.nodes
+      pinnedRepositories.user.pinnedItems.nodes
         .map((n) => n.name)
         .includes(repo.full_name)
     ),

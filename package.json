@@ -6,8 +6,10 @@
     "start": "webpack-dev-server --mode development --port 3000",
     "start:prod": "webpack-dev-server --mode production --port 3000",
     "build": "rm -rf dist && webpack --mode production",
-    "build:docker": "docker build . -t hoppingmode/github-api",
-    "start:docker": "docker run -d -p 8080:3000 hoppingmode/github-api"
+    "docker:restart-services": "npm run docker:remove-image && npm run docker:build-image && npm run docker:run-image",
+    "docker:run-image": "docker run -d -p 8080:3000 --name hoppingmode_github_api hoppingmode/github-api",
+    "docker:build-image": "docker build . -t hoppingmode/github-api",
+    "docker:remove-image": "docker rm -f hoppingmode_github_api"
   },
   "author": "hoppingmode",
   "dependencies": {
@@ -15,6 +17,7 @@
     "express": "^4.17.2",
     "graphql": "^16.2.0",
     "graphql-request": "^3.7.0",
+    "moment": "^2.29.1",
     "morgan": "^1.10.0",
     "webpack-dev-server": "^4.7.3"
   },

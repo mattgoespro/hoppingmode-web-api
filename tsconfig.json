@@ -1,10 +1,10 @@
 {
-  "include": ["./src"],
+  "include": ["app"],
   "exclude": ["./node_modules"],
   "compilerOptions": {
     "target": "es2020",
     "module": "commonjs",
-    "rootDir": "./src",
+    "rootDir": "app",
     "sourceMap": false,
     "esModuleInterop": true,
     "moduleResolution": "node",

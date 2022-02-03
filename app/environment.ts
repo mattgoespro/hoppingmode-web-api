@@ -1,5 +1,4 @@
 export const env = {
-  port: 3000,
   githubLogin: "mattgoespro",
   githubApi: "https://api.github.com",
   githubGraphql: "https://api.github.com/graphql",
