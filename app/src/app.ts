@@ -31,7 +31,7 @@ function respondError(
 
 function setHeaders(_request: Request, response: Response, next: NextFunction) {
   response.set("Access-Control-Allow-Origin", "*");
-  response.set("Authorization", `bearer ${env.githubPersonalAccessToken}`);
+  response.set("Authorization", `token ${env.githubPersonalAccessToken}`);
   next();
 }
 
@@ -87,14 +87,14 @@ export function main() {
 
   api.get("/repos/:name/readme", (request: Request, respond: Response) => {
     axios
-      .get<{ content: string }>(
+      .get(
         `${env.githubApi}/repos/${env.githubLogin}/${request.params.name}/contents/README.md`
       )
       .then((rsp: { data: { content: any }; status: number }) => {
         let payload = rsp.data.content;
         if (rsp.status === 404) {
           payload = "";
-        } else if (rsp.status === 200) {
+        } else if (rsp.status === 200 || rsp.status === 304) {
           payload = Buffer.from(payload, "base64").toString().trim();
         }
         respond.status(200).send(payload);

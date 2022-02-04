@@ -6,7 +6,7 @@
     "start": "webpack-dev-server --mode development --port 3000",
     "start:prod": "webpack-dev-server --mode production --port 3000",
     "build": "rm -rf dist && webpack --mode production",
-    "docker:restart-services": "npm run docker:remove-image && npm run docker:build-image && npm run docker:run-image && npm run docker:prune",
+    "docker:restart-services": "npm run docker:remove-image && npm run docker:build-image && npm run docker:run-image",
     "docker:run-image": "docker run -d -p 8080:3000 --name hoppingmode_github_api hoppingmode/github-api",
     "docker:build-image": "docker build . -t hoppingmode/github-api",
     "docker:remove-image": "docker rm -f hoppingmode_github_api",
