@@ -1,5 +1,5 @@
 import { gql } from "graphql-request";
-import { env } from "../environment";
+import { Response } from "express";
 
 export interface GithubPinnedRepositories {
   user: {
@@ -16,22 +16,6 @@ export interface GithubRepository {
   created_at: string;
   updated_at: string;
   html_url: string;
-}
-
-export function pinnedGithubReposRequest(numItems: number) {
-  return gql`
-    {
-      user(login: "${env.githubLogin}") {
-        pinnedItems(first: ${numItems}, types: REPOSITORY) {
-          nodes {
-            ... on Repository {
-              name
-            }
-          }
-        }
-      }
-    }
-  `;
 }
 
 export interface GithubRepositories {
@@ -51,4 +35,22 @@ export function createGithubRepoResponse(
         .includes(repo.full_name)
     ),
   };
+}
+
+export interface ErrorResponse {
+  status: number;
+  message: string;
+}
+
+export function respondWithError(
+  error: any,
+  message: string,
+  respond: Response,
+  alternateResponseStatus?: number
+) {
+  const errorResponse: ErrorResponse = {
+    status: error.response?.status ?? alternateResponseStatus ?? 500,
+    message,
+  };
+  return respond.status(errorResponse.status).json(errorResponse);
 }

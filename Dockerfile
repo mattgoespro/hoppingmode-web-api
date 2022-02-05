@@ -18,4 +18,4 @@ RUN npm run build
 # Map incoming requests on port 8080 to API port.
 EXPOSE 8080
 
-CMD [ "node", "dist/index.js" ]
+CMD [ "node", "dist/index.js", "--login=mattgoespro", "--PAT=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" ]
