@@ -1,9 +1,10 @@
 import { gql, GraphQLClient } from "graphql-request";
 import express, { Request, Response, NextFunction } from "express";
 import {
-  GithubPinnedRepositories,
+  GithubGraphQlPinnedRepositories,
   createGithubRepoResponse,
   respondWithError,
+  GithubRepository,
 } from "./app.model";
 import { Buffer } from "buffer";
 import axios from "axios";
@@ -43,8 +44,9 @@ export function main() {
       const githubRepos = await axios.get(
         `${githubApi}/users/${githubLogin}/repos`
       );
-      const pinnedGithubRepos = await graphql.request<GithubPinnedRepositories>(
-        gql`
+      const pinnedGithubRepos =
+        await graphql.request<GithubGraphQlPinnedRepositories>(
+          gql`
     {
       user(login: "${githubLogin}") {
         pinnedItems(first: 6, types: REPOSITORY) {
@@ -57,10 +59,22 @@ export function main() {
       }
     }
   `
-      );
+        );
+
+      // Remove extraneous fields from Github API response body.
+      const repoData = (githubRepos.data as GithubRepository[]).map((data) => ({
+        full_name: data.full_name,
+        name: data.name,
+        description: data.description,
+        pinned: false,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+        html_url: data.html_url,
+      }));
+
       respond
         .status(200)
-        .json(createGithubRepoResponse(githubRepos.data, pinnedGithubRepos));
+        .json(createGithubRepoResponse(repoData, pinnedGithubRepos));
     } catch (err) {
       respondWithError(err, "Failed to retrieve repositories.", respond, 500);
     }

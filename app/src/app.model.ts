@@ -1,7 +1,7 @@
 import { gql } from "graphql-request";
 import { Response } from "express";
 
-export interface GithubPinnedRepositories {
+export interface GithubGraphQlPinnedRepositories {
   user: {
     pinnedItems: {
       nodes: { name: string }[];
@@ -16,30 +16,19 @@ export interface GithubRepository {
   created_at: string;
   updated_at: string;
   html_url: string;
-}
-
-export interface GithubRepositories {
-  repositories: GithubRepository[];
-  pinnedRepositories: GithubRepository[];
+  pinned: boolean;
 }
 
 export function createGithubRepoResponse(
   repositories: GithubRepository[],
-  pinnedRepositories: GithubPinnedRepositories
-): GithubRepositories {
-  console.log("Pinned repos");
-  console.log(pinnedRepositories.user.pinnedItems.nodes);
-  console.log(
-    repositories.map((r) => ({ name: r.name, full_name: r.full_name }))
-  );
-  return {
-    repositories: repositories,
-    pinnedRepositories: repositories.filter((repo) =>
-      pinnedRepositories.user.pinnedItems.nodes
-        .map((n) => n.name)
-        .includes(repo.full_name)
-    ),
-  };
+  pinnedRepositories: GithubGraphQlPinnedRepositories
+): GithubRepository[] {
+  return repositories.map((repo) => ({
+    ...repo,
+    pinned: pinnedRepositories.user.pinnedItems.nodes
+      .map((n) => n.name)
+      .includes(repo.name),
+  }));
 }
 
 export interface ErrorResponse {
