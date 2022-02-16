@@ -12,7 +12,7 @@ RUN npm install
 # Copy source code to working directory.
 COPY . .
 
-# Build with webpack, running on port 3000.
+# Build with webpack
 RUN npm run build
 
 # Map incoming requests on port 8080 to API port.

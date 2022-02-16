@@ -3,13 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "webpack-dev-server --mode development --port 3000",
-    "start:prod": "webpack-dev-server --mode production --port 3000",
-    "build": "rm -rf dist && webpack --mode production",
+    "start": "npm run build && node dist/index.js",
+    "build": "webpack --mode production",
     "docker:start-service": "npm run docker:remove-image && npm run docker:build-image && npm run docker:run-image",
-    "docker:run-image": "docker run -d -p 8080:3000 --name hoppingmode_github_api hoppingmode/github-api",
-    "docker:build-image": "docker build . -t hoppingmode/github-api",
-    "docker:remove-image": "docker rm -f hoppingmode_github_api",
+    "docker:run-image": "docker run -d -p 8080:3000 --name project_api hoppingmode/project-api",
+    "docker:build-image": "docker build . -t hoppingmode/project-api",
+    "docker:remove-image": "docker rm -f project_api",
     "docker:prune": "docker system prune --force"
   },
   "author": "hoppingmode",

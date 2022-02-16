@@ -27,6 +27,11 @@ export function createGithubRepoResponse(
   repositories: GithubRepository[],
   pinnedRepositories: GithubPinnedRepositories
 ): GithubRepositories {
+  console.log("Pinned repos");
+  console.log(pinnedRepositories.user.pinnedItems.nodes);
+  console.log(
+    repositories.map((r) => ({ name: r.name, full_name: r.full_name }))
+  );
   return {
     repositories: repositories,
     pinnedRepositories: repositories.filter((repo) =>
