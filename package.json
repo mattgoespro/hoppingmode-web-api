@@ -6,7 +6,7 @@
     "start": "npm run build && node dist/index.js",
     "build": "webpack --mode production",
     "docker:start-service": "npm run docker:remove-image && npm run docker:build-image && npm run docker:run-image",
-    "docker:run-image": "docker run -d -m 10m -p 8080:3000 --name backend hoppingmode/backend",
+    "docker:run-image": "docker run -d -p 8080:3000 --name backend hoppingmode/backend",
     "docker:build-image": "docker build . -t hoppingmode/backend",
     "docker:remove-image": "docker rm -f backend",
     "docker:prune": "docker system prune --force"
