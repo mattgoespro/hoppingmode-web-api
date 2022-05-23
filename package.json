@@ -5,7 +5,7 @@
   "scripts": {
     "start": "npm run build && node dist/index.js",
     "build": "webpack --mode production",
-    "docker:run-container": "docker run -d -p 8082:3000 --name backend hoppingmode/backend",
+    "docker:start-container": "docker run -d -p 8082:3000 --name backend hoppingmode/backend",
     "docker:build-image": "docker build . -t hoppingmode/backend",
     "docker:remove-image": "docker rm -f backend"
   },
