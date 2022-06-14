@@ -11,11 +11,10 @@ import axios from "axios";
 import morgan from "morgan";
 import moment from "moment";
 
-const nodeArgs = require("minimist")(process.argv.slice(2));
 const githubApi = "https://api.github.com";
 const githubGraphql = "https://api.github.com/graphql";
-const githubLogin = nodeArgs["login"];
-const githubPersonalAccessToken = nodeArgs["PAT"];
+const githubLogin = process.env.GITHUB_API_LOGIN;
+const githubPersonalAccessToken = process.env.GITHUB_API_PAT;
 
 function setHeaders(_request: Request, response: Response, next: NextFunction) {
   response.set("Access-Control-Allow-Origin", "*");
