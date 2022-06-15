@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "node dist/index.js --github-api-login=mattgoespro --github-api-pat=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",
     "build": "webpack --mode production",
     "docker:build": "docker build . -t hoppingmode-web/api",
-    "docker:start": "docker run -d --name api hoppingmode-web/api"
+    "docker:start": "docker run -d -p 8080:3000 --name api hoppingmode-web/api"
   },
   "author": "hoppingmode",
   "dependencies": {
@@ -14,6 +14,7 @@
     "express": "^4.17.2",
     "graphql": "^16.2.0",
     "graphql-request": "^3.7.0",
+    "minimist": "^1.2.6",
     "moment": "^2.29.1",
     "morgan": "^1.10.0",
     "webpack-dev-server": "^4.7.3"

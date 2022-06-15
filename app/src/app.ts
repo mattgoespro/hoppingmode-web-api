@@ -11,10 +11,11 @@ import axios from "axios";
 import morgan from "morgan";
 import moment from "moment";
 
+const nodeArgs = require("minimist")(process.argv.slice(2));
 const githubApi = "https://api.github.com";
 const githubGraphql = "https://api.github.com/graphql";
-const githubLogin = process.env.GITHUB_API_LOGIN;
-const githubPersonalAccessToken = process.env.GITHUB_API_PAT;
+const githubLogin = nodeArgs['github-api-login'];
+const githubPersonalAccessToken = nodeArgs['github-api-pat'];
 
 function setHeaders(_request: Request, response: Response, next: NextFunction) {
   response.set("Access-Control-Allow-Origin", "*");
@@ -120,10 +121,10 @@ export function main() {
 
   api.listen(3000, () => {
     console.log(
-      `[${moment().format("llll")}][INFO] API server started successfully.`
+      `[${moment().format("llll")}][INFO] API server started.`
     );
     console.log(
-      `[${moment().format("llll")}][INFO] Listening for requests...`
+      `[${moment().format("llll")}][INFO] Listening on port 3000...`
     );
   });
 }
