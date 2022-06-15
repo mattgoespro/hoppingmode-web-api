@@ -119,9 +119,11 @@ export function main() {
   });
 
   api.listen(3000, () => {
-    console.log(`[${moment().format("llll")}][INFO] Starting API server...`);
     console.log(
-      `[${moment().format("llll")}][SUCCESS] Listening on port 3000.`
+      `[${moment().format("llll")}][INFO] API server started successfully.`
+    );
+    console.log(
+      `[${moment().format("llll")}][INFO] Listening for requests...`
     );
   });
 }
