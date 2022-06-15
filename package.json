@@ -6,7 +6,7 @@
     "start": "node dist/index.js",
     "build": "webpack --mode production",
     "docker:build": "docker build . -t hoppingmode-web/api",
-    "docker:start": "docker run -d --name backend hoppingmode-web/api"
+    "docker:start": "docker run -d --name api hoppingmode-web/api"
   },
   "author": "hoppingmode",
   "dependencies": {
