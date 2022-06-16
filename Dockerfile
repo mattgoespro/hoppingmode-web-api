@@ -10,6 +10,6 @@ COPY . .
 
 RUN npm run build
 
-CMD [ "node", "dist/index.js", "--github-api-login=mattgoespro", "--github-api-pat=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" ]
+CMD [ "node", "dist/index.js", "--github-api-login=mattgoespro", "--github-api-pat=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" ]
 
 EXPOSE 8080

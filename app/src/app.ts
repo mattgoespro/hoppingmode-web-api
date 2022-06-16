@@ -1,5 +1,5 @@
 import { gql, GraphQLClient } from "graphql-request";
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response } from "express";
 import {
   GithubGraphQlPinnedRepositories,
   createGithubRepoResponse,
@@ -10,16 +10,27 @@ import { Buffer } from "buffer";
 import axios from "axios";
 import morgan from "morgan";
 import moment from "moment";
+import cors from 'cors';
+
+const nodeArgs = require("minimist")(process.argv.slice(2));
+const githubApi = "https://api.github.com";
+const githubGraphql = "https://api.github.com/graphql";
+const githubPersonalAccessToken = nodeArgs['github-api-pat'];
 
 export function main() {
   const api = express();
 
-  api.use(morgan("[:date[web]] - [:method] :url [:status]"));
+  api.use(
+    cors({
+      origin: "*"
+    }),
+    morgan("[:date[web]] - [:method] :url [:status]")
+  )
 
-  const graphql = new GraphQLClient("https://api.github.com/graphql", {
+  const graphql = new GraphQLClient(githubGraphql, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `bearer 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`,
+      Authorization: `bearer ${githubPersonalAccessToken}`,
     },
   });
 
@@ -30,7 +41,7 @@ export function main() {
   api.get("/repos", async (_request: Request, respond: Response) => {
     try {
       const githubRepos = await axios.get(
-        `https://api.github.com/users/mattgoespro/repos`
+        `${githubApi}/users/mattgoespro/repos`
       );
       const pinnedGithubRepos =
         await graphql.request<GithubGraphQlPinnedRepositories>(
@@ -70,7 +81,7 @@ export function main() {
 
   api.get("/repos/:name/languages", (request: Request, respond: Response) => {
     axios
-      .get(`https://api.github.com/repos/mattgoespro/${request.params.name}/languages`)
+      .get(`${githubApi}/repos/mattgoespro/${request.params.name}/languages`)
       .then((languages: { data: any }) => {
         respond.status(200).json(languages.data);
       })
@@ -87,7 +98,7 @@ export function main() {
   api.get("/repos/:name/readme", (request: Request, respond: Response) => {
     axios
       .get(
-        `https://api.github.com/repos/mattgoespro/${request.params.name}/contents/README.md`
+        `${githubApi}/repos/mattgoespro/${request.params.name}/contents/README.md`
       )
       .then((rsp: { data: { content: any }; status: number }) => {
         let payload = rsp.data.content;
