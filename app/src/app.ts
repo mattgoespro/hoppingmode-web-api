@@ -11,27 +11,15 @@ import axios from "axios";
 import morgan from "morgan";
 import moment from "moment";
 
-const nodeArgs = require("minimist")(process.argv.slice(2));
-const githubApi = "https://api.github.com";
-const githubGraphql = "https://api.github.com/graphql";
-const githubLogin = nodeArgs['github-api-login'];
-const githubPersonalAccessToken = nodeArgs['github-api-pat'];
-
-function setHeaders(_request: Request, response: Response, next: NextFunction) {
-  response.set("Access-Control-Allow-Origin", "*");
-  response.set("Authorization", `token ${githubPersonalAccessToken}`);
-  next();
-}
-
 export function main() {
   const api = express();
 
-  api.use(setHeaders, morgan("[:date[web]] - [:method] :url [:status]"));
+  api.use(morgan("[:date[web]] - [:method] :url [:status]"));
 
-  const graphql = new GraphQLClient(githubGraphql, {
+  const graphql = new GraphQLClient("https://api.github.com/graphql", {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `bearer ${githubPersonalAccessToken}`,
+      Authorization: `bearer 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`,
     },
   });
 
@@ -42,13 +30,13 @@ export function main() {
   api.get("/repos", async (_request: Request, respond: Response) => {
     try {
       const githubRepos = await axios.get(
-        `${githubApi}/users/${githubLogin}/repos`
+        `https://api.github.com/users/mattgoespro/repos`
       );
       const pinnedGithubRepos =
         await graphql.request<GithubGraphQlPinnedRepositories>(
           gql`
     {
-      user(login: "${githubLogin}") {
+      user(login: "mattgoespro") {
         pinnedItems(first: 6, types: REPOSITORY) {
           nodes {
             ... on Repository {
@@ -82,7 +70,7 @@ export function main() {
 
   api.get("/repos/:name/languages", (request: Request, respond: Response) => {
     axios
-      .get(`${githubApi}/repos/${githubLogin}/${request.params.name}/languages`)
+      .get(`https://api.github.com/repos/mattgoespro/${request.params.name}/languages`)
       .then((languages: { data: any }) => {
         respond.status(200).json(languages.data);
       })
@@ -99,7 +87,7 @@ export function main() {
   api.get("/repos/:name/readme", (request: Request, respond: Response) => {
     axios
       .get(
-        `${githubApi}/repos/${githubLogin}/${request.params.name}/contents/README.md`
+        `https://api.github.com/repos/mattgoespro/${request.params.name}/contents/README.md`
       )
       .then((rsp: { data: { content: any }; status: number }) => {
         let payload = rsp.data.content;
