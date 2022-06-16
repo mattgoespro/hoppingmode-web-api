@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "node dist/index.js --github-api-login=mattgoespro --github-api-pat=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",
+    "s": "nodemon app/index.ts",
+    "start": "node dist/index.js --github-api-login=mattgoespro --github-api-pat=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",
     "build": "webpack --mode production",
     "docker:build": "docker build . -t hoppingmode-web/api",
     "docker:start": "docker run -d -p 8080:3000 --name api hoppingmode-web/api"
