@@ -1,4 +1,3 @@
-import { gql } from "graphql-request";
 import { Response } from "express";
 
 export interface GithubGraphQlPinnedRepositories {
@@ -19,15 +18,10 @@ export interface GithubRepository {
   pinned: boolean;
 }
 
-export function createGithubRepoResponse(
-  repositories: GithubRepository[],
-  pinnedRepositories: GithubGraphQlPinnedRepositories
-): GithubRepository[] {
+export function createGithubRepoResponse(repositories: GithubRepository[], pinnedRepositories: GithubGraphQlPinnedRepositories): GithubRepository[] {
   return repositories.map((repo) => ({
     ...repo,
-    pinned: pinnedRepositories.user.pinnedItems.nodes
-      .map((n) => n.name)
-      .includes(repo.name),
+    pinned: pinnedRepositories.user.pinnedItems.nodes.map((n) => n.name).includes(repo.name),
   }));
 }
 
@@ -36,12 +30,7 @@ export interface ErrorResponse {
   message: string;
 }
 
-export function respondWithError(
-  error: any,
-  message: string,
-  respond: Response,
-  alternateResponseStatus?: number
-) {
+export function respondWithError(error: any, message: string, respond: Response, alternateResponseStatus?: number) {
   const errorResponse: ErrorResponse = {
     status: error.response?.status ?? alternateResponseStatus ?? 500,
     message,
