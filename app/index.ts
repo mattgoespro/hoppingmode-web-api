@@ -1,8 +1,9 @@
-import moment from "moment";
 import { RestApiServer } from "./src/services/controllers/rest-controller";
+import moment from "moment";
 import dotenv from "dotenv";
 
 // Process environment variables
+delete process.env.GITHUB_API_PAT;
 dotenv.config();
 
 RestApiServer({

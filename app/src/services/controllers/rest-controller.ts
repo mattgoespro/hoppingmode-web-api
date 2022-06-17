@@ -2,8 +2,8 @@ import { gql } from "graphql-request";
 import { GithubGraphQlPinnedRepositories, createGithubRepoResponse, respondWithError as respondError, GithubRepository } from "../app.model";
 import { Buffer } from "buffer";
 import { graphqlClient } from "../clients/gql-client";
-import restServer from "../../rest-server";
 import { axiosHttpClient } from "../clients/http-client";
+import restServer from "../rest-server";
 
 export interface ApiClientDetails {
   githubRestApiTarget: string;
