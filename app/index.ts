@@ -3,7 +3,7 @@ import { RestApiServer } from "./src/services/controllers/rest-controller";
 import dotenv from "dotenv";
 
 // Process environment variables
-dotenv.config({});
+dotenv.config();
 
 RestApiServer({
   githubRestApiTarget: process.env.GITHUB_REST_API_TARGET || "",
