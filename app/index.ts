@@ -1,10 +1,10 @@
 import moment from "moment";
 import { RestApiServer } from "./src/services/controllers/rest-controller";
+import dotenv from "dotenv";
 
 // Process environment variables
-require("dotenv")();
+dotenv.config({});
 
-// Start API server
 RestApiServer({
   githubRestApiTarget: process.env.GITHUB_REST_API_TARGET || "",
   githubGraphqlApiTarget: process.env.GITHUB_GRAPHQL_API_TARGET || "",
