@@ -1,5 +1,5 @@
 import { gql } from "graphql-request";
-import { GithubGraphQlPinnedRepositories, createGithubRepoResponse, respondWithError as respondError, GithubRepository } from "../app.model";
+import { GithubGraphQlPinnedRepositories, createGithubRepoResponse, GithubRepository, GithubApiRestError } from "../app.model";
 import { Buffer } from "buffer";
 import { graphqlClient } from "../clients/gql-client";
 import { axiosHttpClient } from "../clients/http-client";
@@ -20,70 +20,72 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
     respond.send("Hello, this is dog.");
   });
 
-  restServer.get("/repos", async (_request, respond) => {
-    try {
-      const githubRepos = await httpClient.get(`/users/mattgoespro/repos`);
-      const pinnedGithubRepos = await gqlClient.request<GithubGraphQlPinnedRepositories>(
-        gql`
-          {
-            user(login: "mattgoespro") {
-              pinnedItems(first: 6, types: REPOSITORY) {
-                nodes {
-                  ... on Repository {
-                    name
+  restServer.get("/repos", async (request, respond) => {
+    httpClient
+      .get<GithubRepository[]>(`/users/mattgoespro/repos`)
+      .then((resp) => {
+        const githubRepos = resp.data;
+        gqlClient
+          .request<GithubGraphQlPinnedRepositories>(
+            gql`
+              {
+                user(login: "mattgoespro") {
+                  pinnedItems(first: ${request.query.first || 10}, types: REPOSITORY) {
+                    nodes {
+                      ... on Repository {
+                        name
+                      }
+                    }
                   }
                 }
               }
-            }
-          }
-        `
-      );
+            `
+          )
+          .then((resp) => {
+            const pinnedGithubRepos = resp;
 
-      // Strip extraneous fields from Github API response body.
-      const repoData = (githubRepos.data as GithubRepository[]).map((data) => ({
-        full_name: data.full_name,
-        name: data.name,
-        description: data.description,
-        pinned: false,
-        created_at: data.created_at,
-        updated_at: data.updated_at,
-        html_url: data.html_url,
-      }));
+            // Strip extraneous fields from Github API response body.
+            const repoData = githubRepos.map((repo) => ({
+              full_name: repo.full_name,
+              name: repo.name,
+              description: repo.description,
+              pinned: false,
+              created_at: repo.created_at,
+              updated_at: repo.updated_at,
+              html_url: repo.html_url,
+            }));
 
-      respond.status(200).json(createGithubRepoResponse(repoData, pinnedGithubRepos));
-    } catch (err) {
-      respondError(err, "Failed to retrieve repositories." + JSON.stringify(err), respond, 500);
-    }
-  });
-
-  restServer.get("/repos/:name/languages", (request, respond) => {
-    httpClient
-      .get(`/repos/mattgoespro/${request.params.name}/languages`)
-      .then((languages: { data: any }) => {
-        respond.status(200).json(languages.data);
+            respond.status(200).json(createGithubRepoResponse(repoData, pinnedGithubRepos));
+          })
+          .catch(() => {
+            respond.status(500).json("GraphQL request error.");
+          });
       })
-      .catch((err: any) => {
-        console.log(err);
-        respondError(err, `Failed to retrieve languages for project '${request.params.name}'.`, respond);
+      .catch((err: GithubApiRestError) => {
+        respond.status(err.response.status).json(err.response.statusText);
       });
   });
 
-  restServer.get("/repos/:name/readme", (request, respond) => {
+  restServer.get("/repos/:repoName/languages", (request, respond) => {
     httpClient
-      .get(`/repos/mattgoespro/${request.params.name}/contents/README.md`)
-      .then((rsp: { data: { content: any }; status: number }) => {
-        let payload = rsp.data.content;
-
-        if (rsp.status === 404) {
-          payload = "";
-        } else if (rsp.status === 200 || rsp.status === 304) {
-          payload = Buffer.from(payload, "base64").toString().trim();
-        }
-
-        respond.status(200).send(payload);
+      .get<{ [key: string]: number }>(`/repos/mattgoespro/${request.params.repoName}/languages`)
+      .then((resp) => {
+        respond.status(200).json(resp.data);
       })
-      .catch((err: any) => {
-        respondError(err, `Failed to retrieve readme for project '${request.params.name}'.`, respond);
+      .catch((err: GithubApiRestError) => {
+        respond.status(err.response.status).json(err.response.statusText);
+      });
+  });
+
+  restServer.get("/repos/:repoName/readme", (request, respond) => {
+    httpClient
+      .get<{ content: string; encoding: BufferEncoding }>(`/repos/mattgoespro/${request.params.repoName}/contents/README.md`)
+      .then((rsp) => {
+        const readme = Buffer.from(rsp.data.content, rsp.data.encoding).toString();
+        respond.status(200).send(readme);
+      })
+      .catch((err: GithubApiRestError) => {
+        respond.status(err.response.status).json(err.response.statusText);
       });
   });
 

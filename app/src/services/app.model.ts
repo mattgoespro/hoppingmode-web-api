@@ -1,5 +1,3 @@
-import { Response } from "express";
-
 export interface GithubGraphQlPinnedRepositories {
   user: {
     pinnedItems: {
@@ -30,10 +28,11 @@ export interface ErrorResponse {
   message: string;
 }
 
-export function respondWithError(error: any, message: string, respond: Response, alternateResponseStatus?: number) {
-  const errorResponse: ErrorResponse = {
-    status: error.response?.status ?? alternateResponseStatus ?? 500,
-    message,
-  };
-  return respond.status(errorResponse.status).json(errorResponse);
+export interface GithubApiRestError {
+  response: GithubApiRestErrorResponse;
+}
+
+interface GithubApiRestErrorResponse {
+  status: number;
+  statusText: string;
 }
