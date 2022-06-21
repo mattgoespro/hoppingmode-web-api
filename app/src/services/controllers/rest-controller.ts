@@ -3,24 +3,30 @@ import { GithubGraphQlPinnedRepositories, createGithubRepoResponse, GithubReposi
 import { Buffer } from "buffer";
 import { graphqlClient } from "../clients/gql-client";
 import { axiosHttpClient } from "../clients/http-client";
-import restServer from "../rest-server";
+import jwt from "jsonwebtoken";
+import { handleLogin } from "../auth";
+import { restServer } from "../rest-server";
 
 export interface ApiClientDetails {
   githubRestApiTarget: string;
   githubGraphqlApiTarget: string;
   githubApiLogin: string;
   githubApiPat: string;
+  jwtSigningKey: string;
 }
 
 export const RestApiServer = (apiDetails: ApiClientDetails) => {
   const gqlClient = graphqlClient(apiDetails);
   const httpClient = axiosHttpClient(apiDetails);
+  const apiServer = restServer(apiDetails.jwtSigningKey);
 
-  restServer.get("/", (_request, respond) => {
+  apiServer.get("/", (_request, respond) => {
     respond.send("Hello, this is dog.");
   });
 
-  restServer.get("/repos", async (request, respond) => {
+  apiServer.post("/login", handleLogin(apiDetails.jwtSigningKey));
+
+  apiServer.get("/repos", async (request, respond) => {
     httpClient
       .get<GithubRepository[]>(`/users/mattgoespro/repos`)
       .then((resp) => {
@@ -66,7 +72,7 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
       });
   });
 
-  restServer.get("/repos/:repoName/languages", (request, respond) => {
+  apiServer.get("/repos/:repoName/languages", (request, respond) => {
     httpClient
       .get<{ [key: string]: number }>(`/repos/mattgoespro/${request.params.repoName}/languages`)
       .then((resp) => {
@@ -77,17 +83,17 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
       });
   });
 
-  restServer.get("/repos/:repoName/readme", (request, respond) => {
+  apiServer.get("/repos/:repoName/readme", (request, respond) => {
     httpClient
       .get<{ content: string; encoding: BufferEncoding }>(`/repos/mattgoespro/${request.params.repoName}/contents/README.md`)
       .then((rsp) => {
-        const readme = Buffer.from(rsp.data.content, rsp.data.encoding).toString();
-        respond.status(200).send(readme);
+        const readmeContent = Buffer.from(rsp.data.content, rsp.data.encoding).toString();
+        respond.status(200).send(readmeContent);
       })
       .catch((err: GithubApiRestError) => {
         respond.status(err.response.status).json(err.response.statusText);
       });
   });
 
-  return restServer;
+  return apiServer;
 };

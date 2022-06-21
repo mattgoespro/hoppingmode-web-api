@@ -10,7 +10,6 @@
     "moduleResolution": "node",
     "baseUrl": "./",
     "paths": {},
-    "strict": true,
-    "noImplicitAny": true
+    "noImplicitAny": false
   }
 }
