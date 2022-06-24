@@ -1,5 +1,11 @@
 import { gql } from "graphql-request";
-import { GithubGraphQlPinnedRepositories, createGithubRepoResponse, GithubRepository, GithubApiRestError } from "../app.model";
+import {
+  GithubGqlResponseDTO,
+  GithubRepositoryResponseDTO,
+  GithubApiRestErrorResponse,
+  ApiRepositoryResponseDTO,
+  GithubRepositoryLanguageResponseDTO,
+} from "../app.model";
 import { Buffer } from "buffer";
 import { graphqlClient } from "../clients/gql-client";
 import { axiosHttpClient } from "../clients/http-client";
@@ -20,59 +26,62 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
     respond.send("Hello, this is dog.");
   });
 
-  restServer.get("/repos", async (request, respond) => {
+  restServer.get("/repos", (_request, respond) => {
     httpClient
-      .get<GithubRepository[]>(`/users/mattgoespro/repos`)
+      .get<GithubRepositoryResponseDTO[]>(`/users/mattgoespro/repos`)
       .then((resp) => {
-        const githubRepos = resp.data;
-        gqlClient
-          .request<GithubGraphQlPinnedRepositories>(
-            gql`
-              {
-                user(login: "mattgoespro") {
-                  pinnedItems(first: ${request.query.first || 10}, types: REPOSITORY) {
-                    nodes {
-                      ... on Repository {
-                        name
-                      }
-                    }
+        // Strip extraneous fields from Github API response body.
+        const repos = resp.data.map<ApiRepositoryResponseDTO>((repo) => ({
+          name: repo.name,
+          description: repo.description,
+          createdTimestamp: repo.created_at,
+          updatedTimestamp: repo.updated_at,
+          link: repo.html_url,
+        }));
+
+        respond.status(200).json(repos);
+      })
+      .catch((err: GithubApiRestErrorResponse) => {
+        respond.status(err.response.status).json(err.response.statusText);
+      });
+  });
+
+  restServer.get("/repos/pinned", (_request, respond) => {
+    gqlClient
+      .request<GithubGqlResponseDTO>(
+        gql`
+          query GithubPinnedProjects {
+            mattgoespro: user(login: "mattgoespro") {
+              projects: pinnedItems(first: 4, types: REPOSITORY) {
+                pinned: nodes {
+                  ... on Repository {
+                    name
+                    description
+                    createdTimestamp: createdAt
+                    updatedTimestamp: updatedAt
+                    link: url
                   }
                 }
               }
-            `
-          )
-          .then((resp) => {
-            const pinnedGithubRepos = resp;
-
-            // Strip extraneous fields from Github API response body.
-            const repoData = githubRepos.map((repo) => ({
-              full_name: repo.full_name,
-              name: repo.name,
-              description: repo.description,
-              pinned: false,
-              created_at: repo.created_at,
-              updated_at: repo.updated_at,
-              html_url: repo.html_url,
-            }));
-
-            respond.status(200).json(createGithubRepoResponse(repoData, pinnedGithubRepos));
-          })
-          .catch(() => {
-            respond.status(500).json("GraphQL request error.");
-          });
+            }
+          }
+        `
+      )
+      .then((resp) => {
+        respond.status(200).json(resp.mattgoespro.projects.pinned);
       })
-      .catch((err: GithubApiRestError) => {
-        respond.status(err.response.status).json(err.response.statusText);
+      .catch((err) => {
+        respond.status(500).json("Malformed GraphQL request.");
       });
   });
 
   restServer.get("/repos/:repoName/languages", (request, respond) => {
     httpClient
-      .get<{ [key: string]: number }>(`/repos/mattgoespro/${request.params.repoName}/languages`)
+      .get<GithubRepositoryLanguageResponseDTO>(`/repos/mattgoespro/${request.params.repoName}/languages`)
       .then((resp) => {
         respond.status(200).json(resp.data);
       })
-      .catch((err: GithubApiRestError) => {
+      .catch((err: GithubApiRestErrorResponse) => {
         respond.status(err.response.status).json(err.response.statusText);
       });
   });
@@ -84,7 +93,7 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
         const readme = Buffer.from(rsp.data.content, rsp.data.encoding).toString();
         respond.status(200).send(readme);
       })
-      .catch((err: GithubApiRestError) => {
+      .catch((err: GithubApiRestErrorResponse) => {
         respond.status(err.response.status).json(err.response.statusText);
       });
   });

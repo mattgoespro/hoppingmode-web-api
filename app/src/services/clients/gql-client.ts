@@ -5,7 +5,7 @@ export const graphqlClient = (apiInfo: ApiClientDetails) => {
   return new GraphQLClient(apiInfo.githubGraphqlApiTarget, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `bearer ${apiInfo.githubApiPat}`,
+      // Authorization: `bearer ${apiInfo.githubApiPat}`,
     },
   });
 };

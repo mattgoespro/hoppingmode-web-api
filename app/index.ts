@@ -7,9 +7,9 @@ delete process.env.GITHUB_API_PAT;
 dotenv.config();
 
 RestApiServer({
-  githubRestApiTarget: process.env.GITHUB_REST_API_TARGET || "",
-  githubGraphqlApiTarget: process.env.GITHUB_GRAPHQL_API_TARGET || "",
-  githubApiLogin: process.env.GITHUB_API_LOGIN || "",
+  githubRestApiTarget: "https://api.github.com",
+  githubGraphqlApiTarget: "https://api.github.com/graphql",
+  githubApiLogin: "mattgoespro",
   githubApiPat: process.env.GITHUB_API_PAT || "",
 }).listen(3000, () => {
   console.log(`[${moment().format("llll")}][INFO] REST API server started.`);
