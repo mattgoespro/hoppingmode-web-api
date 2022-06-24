@@ -5,6 +5,7 @@ import {
   GithubApiRestErrorResponse,
   ApiRepositoryResponseDTO,
   GithubRepositoryLanguageResponseDTO,
+  GraphQlErrorResponse,
 } from "../app.model";
 import { Buffer } from "buffer";
 import { graphqlClient } from "../clients/gql-client";
@@ -42,7 +43,7 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
         respond.status(200).json(repos);
       })
       .catch((err: GithubApiRestErrorResponse) => {
-        respond.status(err.response.status).json(err.response.statusText);
+        respond.status(err.response.status).json(err.response);
       });
   });
 
@@ -70,8 +71,8 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
       .then((resp) => {
         respond.status(200).json(resp.mattgoespro.projects.pinned);
       })
-      .catch((err) => {
-        respond.status(500).json("Malformed GraphQL request.");
+      .catch((err: GraphQlErrorResponse) => {
+        respond.status(err.response.status).json(err.response);
       });
   });
 
@@ -82,7 +83,7 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
         respond.status(200).json(resp.data);
       })
       .catch((err: GithubApiRestErrorResponse) => {
-        respond.status(err.response.status).json(err.response.statusText);
+        respond.status(err.response.status).json(err.response);
       });
   });
 
@@ -94,7 +95,7 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
         respond.status(200).send(readme);
       })
       .catch((err: GithubApiRestErrorResponse) => {
-        respond.status(err.response.status).json(err.response.statusText);
+        respond.status(err.response.status).json(err.response);
       });
   });
 

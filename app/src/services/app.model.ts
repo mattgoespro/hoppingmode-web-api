@@ -31,6 +31,13 @@ export interface HttpErrorResponse {
   message: string;
 }
 
+export interface GraphQlErrorResponse {
+  response: {
+    status: number;
+    message: string;
+  };
+}
+
 export interface GithubApiRestErrorResponse {
   response: {
     status: number;
