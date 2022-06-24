@@ -1,15 +1,9 @@
 export interface GithubRepositoryResponseDTO {
   name: string;
-  full_name: string;
   description: string;
   created_at: string;
   updated_at: string;
   html_url: string;
-  pinned: boolean;
-}
-
-export interface GithubRepositoryLanguageResponseDTO {
-  languages: { [key: string]: number };
 }
 
 export interface GithubGqlResponseDTO {
@@ -26,6 +20,10 @@ export interface ApiRepositoryResponseDTO {
   createdTimestamp: string;
   updatedTimestamp: string;
   link: string;
+}
+
+export interface GithubRepositoryLanguageResponseDTO {
+  languages: { [key: string]: number };
 }
 
 export interface HttpErrorResponse {
