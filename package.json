@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "nodemon app/index.ts",
+    "start:dev": "nodemon app/index.ts",
+    "start:prod": "node dist/index.js",
     "build": "webpack --mode production",
     "docker:build": "docker build . -t hoppingmode-web/api",
     "docker:start": "docker run -d -p 8080:3000 --name api hoppingmode-web/api"
