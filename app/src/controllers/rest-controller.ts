@@ -8,8 +8,8 @@ import {
   GraphQlErrorResponse,
 } from "../app.model";
 import { Buffer } from "buffer";
-import { graphqlClient } from "../clients/gql-client";
-import { axiosHttpClient } from "../clients/http-client";
+import { graphqlClient } from "../services/gql-client";
+import { axiosHttpClient } from "../services/http-client";
 import restServer from "../rest-server";
 
 export interface ApiClientDetails {
@@ -26,6 +26,11 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
   restServer.get("/", (_request, respond) => {
     respond.send("Hello, this is dog.");
   });
+
+  async function doesGitHubRepositoryExist(repoName: string) {
+    const repos = await httpClient.get<GithubRepositoryResponseDTO[]>(`/users/mattgoespro/repos`);
+    return repos.data.filter((repo) => repo.name === repoName).length > 0;
+  }
 
   restServer.get("/repos", (_request, respond) => {
     httpClient
@@ -53,7 +58,7 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
         gql`
           query GithubPinnedProjects {
             mattgoespro: user(login: "mattgoespro") {
-              projects: pinnedItems(first: 4, types: REPOSITORY) {
+              projects: pinnedItems(first: 5, types: REPOSITORY) {
                 pinned: nodes {
                   ... on Repository {
                     name
@@ -69,34 +74,45 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
         `
       )
       .then((resp) => {
-        respond.status(200).json(resp.mattgoespro.projects.pinned);
+        respond.status(200).send(resp.mattgoespro.projects.pinned);
       })
       .catch((err: GraphQlErrorResponse) => {
-        respond.status(err.response.status).json(err.response);
+        respond.status(err.response.status).send(err.response);
       });
   });
 
-  restServer.get("/repos/:repoName/languages", (request, respond) => {
-    httpClient
-      .get<GithubRepositoryLanguageResponseDTO>(`/repos/mattgoespro/${request.params.repoName}/languages`)
-      .then((resp) => {
-        respond.status(200).json(resp.data);
-      })
-      .catch((err: GithubApiRestErrorResponse) => {
-        respond.status(err.response.status).json(err.response);
-      });
+  restServer.get("/repos/:repoName/languages", async (request, respond) => {
+    const repoName = request.params.repoName;
+
+    if (await doesGitHubRepositoryExist(repoName)) {
+      httpClient
+        .get<GithubRepositoryLanguageResponseDTO>(`/repos/mattgoespro/${repoName}/languages`)
+        .then((resp) => {
+          respond.status(200).json(resp.data);
+        })
+        .catch((err: GithubApiRestErrorResponse) => {
+          respond.status(err.response.status).send(err.response);
+        });
+    } else {
+      respond.status(404).send({ status: 404, statusText: `Repository '${repoName}' does not exist.` });
+    }
   });
 
-  restServer.get("/repos/:repoName/readme", (request, respond) => {
-    httpClient
-      .get<{ content: string; encoding: BufferEncoding }>(`/repos/mattgoespro/${request.params.repoName}/contents/README.md`)
-      .then((rsp) => {
-        const readme = Buffer.from(rsp.data.content, rsp.data.encoding).toString();
-        respond.status(200).send(readme);
-      })
-      .catch((err: GithubApiRestErrorResponse) => {
-        respond.status(err.response.status).json(err.response);
-      });
+  restServer.get("/repos/:repoName/readme", async (request, respond) => {
+    const repoName = request.params.repoName;
+    if (await doesGitHubRepositoryExist(repoName)) {
+      httpClient
+        .get<{ content: string; encoding: BufferEncoding }>(`/repos/mattgoespro/${repoName}/contents/README.md`)
+        .then((rsp) => {
+          const readme = Buffer.from(rsp.data.content, rsp.data.encoding).toString();
+          respond.status(200).send(readme);
+        })
+        .catch((err: GithubApiRestErrorResponse) => {
+          respond.status(err.response.status).send(err.response);
+        });
+    } else {
+      respond.status(404).send({ status: 404, statusText: `Repository '${repoName}' does not exist.` });
+    }
   });
 
   return restServer;

@@ -1,8 +1,6 @@
-import express from "express";
 import morgan from "morgan";
-import cors from "cors";
 
-morgan.token("status-name", (_req, res) => {
+export default morgan.token("status-name", (_req, res) => {
   switch (res.statusCode) {
     case 200:
       return "OK";
@@ -17,11 +15,4 @@ morgan.token("status-name", (_req, res) => {
     case 503:
       return "Service Unavailable";
   }
-});
-
-export default express().use(
-  morgan("[:date[web]] - [:method] :url (:status :status-name) [:response-time ms]"),
-  cors({
-    origin: "http://localhost",
-  })
-);
+})("[:date[web]] - [:method] :url (:status :status-name) [:response-time ms]");
