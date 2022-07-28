@@ -1,15 +1,9 @@
 FROM node:16
 
-WORKDIR /usr/src/app
+WORKDIR /usr/apps/api
 
-COPY package*.json ./
+COPY dist/apps/api .
 
-RUN npm ci
-
-COPY . .
-
-RUN npm run build
-
-CMD [ "npm", "run", "start:dev" ]
+CMD [ "node" , "main.js" ]
 
 EXPOSE 8080

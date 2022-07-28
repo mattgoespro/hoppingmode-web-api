@@ -1,6 +1,6 @@
 {
   "include": ["app"],
-  "exclude": ["./node_modules"],
+  "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "target": "es2020",
     "module": "commonjs",
@@ -8,9 +8,8 @@
     "sourceMap": false,
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {},
-    "strict": true,
     "noImplicitAny": true
   }
 }

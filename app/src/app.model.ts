@@ -6,14 +6,6 @@ export interface GithubRepositoryResponseDTO {
   html_url: string;
 }
 
-export interface GithubGqlResponseDTO {
-  mattgoespro: {
-    projects: {
-      pinned: ApiRepositoryResponseDTO[];
-    };
-  };
-}
-
 export interface ApiRepositoryResponseDTO {
   name: string;
   description: string;
@@ -26,8 +18,8 @@ export interface GithubRepositoryLanguageResponseDTO {
   languages: { [key: string]: number };
 }
 
-export interface HttpErrorResponse {
-  status: number;
+export interface ApiHttpErrorResponse {
+  httpErrorCode: number;
   message: string;
 }
 
