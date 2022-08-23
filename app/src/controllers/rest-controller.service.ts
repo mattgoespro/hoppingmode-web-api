@@ -22,7 +22,7 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
   });
 
   async function doesGitHubRepositoryExist(repoName: string) {
-    return httpClient.get<GithubRepositoryResponseDTO[]>(`/users/mattgoespro/repos/${repoName}`);
+    return httpClient.get<GithubRepositoryResponseDTO[]>(`/repos/mattgoespro/${repoName}`);
   }
 
   restServer.get("/repos", (_request, respond) => {
