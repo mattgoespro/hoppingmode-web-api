@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import generateBanner from "figlet";
 import { RestApiServer } from "./src/controllers/rest-controller.service";
 
-// Init process variables
+// Process .env file
 delete process.env.GITHUB_API_PAT;
 dotenv.config();
 

@@ -7,7 +7,7 @@
     "start:prod": "node dist/index.js",
     "build": "webpack --mode production",
     "docker:build": "docker build . -t hoppingmode-web/api",
-    "docker:start": "docker run -d -p 8080:3000 --name api hoppingmode-web/api"
+    "docker:start": "(docker rm -f api || true) && docker run -d -p 8080:3000 --name api hoppingmode-web/api"
   },
   "author": "hoppingmode",
   "dependencies": {
@@ -33,6 +33,7 @@
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.5.5",
     "webpack": "^5.68.0",
+    "webpack-cli": "^4.10.0",
     "webpack-merge": "^5.8.0",
     "webpack-node-externals": "^3.0.0"
   }

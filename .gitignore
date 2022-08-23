@@ -15,3 +15,7 @@ dist
 # Misc
 .env
 temp
+
+.env*
+!.env.project
+!.env.vault
