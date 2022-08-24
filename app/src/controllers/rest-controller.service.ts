@@ -74,7 +74,8 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
       .then((rsp) => respond.status(200).json({ content: Buffer.from(rsp.data.content, rsp.data.encoding).toString() }))
       .catch((err) => {
         if (err.code === "ERR_BAD_REQUEST") {
-          sendApiErrorResponse(null, `Project '${repoName}' is empty.`, respond, 404);
+          // Repo has not been initialized (i.e has no files).
+          respond.status(200).json({ content: "" });
         }
       });
   });
