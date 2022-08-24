@@ -1,10 +1,9 @@
-import { gql } from "graphql-request";
-import { GithubGqlResponseDTO, GithubRestErrorResponse, GithubRestRepositoryResponseDTO } from "./github-api.model";
+import { GithubRestErrorResponse, GithubRestRepositoryResponseDTO } from "./github-api.model";
 import { Buffer } from "buffer";
-import { graphqlClient } from "../services/gql-client";
 import { axiosHttpClient } from "../services/http-client";
 import restServer from "../rest-server";
 import { mapToApiRepositoryResponseDTO, sendApiErrorResponse } from "./rest-controller.model";
+import { GithubGraphQlClient } from "../services/gql-client";
 
 export interface ApiClientDetails {
   githubRestApiTarget: string;
@@ -14,8 +13,8 @@ export interface ApiClientDetails {
 }
 
 export const RestApiServer = (apiDetails: ApiClientDetails) => {
-  const gqlClient = graphqlClient(apiDetails);
   const httpClient = axiosHttpClient(apiDetails);
+  const gqlClient = new GithubGraphQlClient(apiDetails);
 
   restServer.get("/", (_request, respond) => {
     respond.send("Hello, this is dog.");
@@ -36,26 +35,7 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
 
   restServer.get("/repos/pinned", (_request, respond) => {
     gqlClient
-      .request<GithubGqlResponseDTO>(
-        gql`
-          query GithubPinnedProjects {
-            mattgoespro: user(login: "mattgoespro") {
-              projects: pinnedItems(first: 5, types: REPOSITORY) {
-                pinned: nodes {
-                  ... on Repository {
-                    repositoryName: name
-                    friendlyName: homepage
-                    description
-                    createdTimestamp: createdAt
-                    updatedTimestamp: updatedAt
-                    link: url
-                  }
-                }
-              }
-            }
-          }
-        `
-      )
+      .getPinnedRepositories()
       .then((resp) => {
         respond.status(200).send(resp.mattgoespro.projects.pinned);
       })
