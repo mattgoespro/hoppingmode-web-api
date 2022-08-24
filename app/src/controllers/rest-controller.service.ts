@@ -80,9 +80,11 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
     doesGitHubRepositoryExist(repoName)
       .then(() =>
         httpClient
-          .get<GithubRepositoryLanguageResponseDTO>(`/repos/mattgoespro/${repoName}/languages`)
+          .get<{ [key: string]: number }>(`/repos/mattgoespro/${repoName}/languages`)
           .then((resp) => {
-            respond.status(200).json(resp.data);
+            respond.status(200).json({
+              languages: resp.data,
+            });
           })
           .catch((err: GithubApiErrorResponse) => {
             sendApiErrorResponse(err, `Unable to retrieve languages for project '${repoName}'.`, respond);
@@ -100,7 +102,7 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
           .get<{ content: string; encoding: BufferEncoding }>(`/repos/mattgoespro/${repoName}/contents/README.md`)
           .then((rsp) => {
             const readme = Buffer.from(rsp.data.content, rsp.data.encoding).toString();
-            respond.status(200).send(readme);
+            respond.status(200).json({ content: readme });
           })
           .catch((err: GithubApiErrorResponse) => {
             respond.status(err.response.status).send(err.response);
