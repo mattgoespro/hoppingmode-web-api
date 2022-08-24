@@ -20,7 +20,8 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
     respond.send("Hello, this is dog.");
   });
 
-  async function doesGitHubRepositoryExist(repoName: string) {
+  async function doesGithubRepositoryExist(repoName: string) {
+    // console.log((await httpClient.get<GithubRestRepositoryResponseDTO[]>(`/repos/mattgoespro/${repoName}`)).data);
     return httpClient.get<GithubRestRepositoryResponseDTO[]>(`/repos/mattgoespro/${repoName}`);
   }
 
@@ -28,9 +29,7 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
     httpClient
       .get<GithubRestRepositoryResponseDTO[]>(`/users/mattgoespro/repos`)
       .then((resp) => respond.status(200).json(resp.data.map(mapToApiRepositoryResponseDTO)))
-      .catch((err: GithubRestErrorResponse) => {
-        sendApiErrorResponse(err, "Unable to retrieve Github projects.", respond);
-      });
+      .catch((err: GithubRestErrorResponse) => sendApiErrorResponse(err, "Unable to retrieve Github projects.", respond));
   });
 
   restServer.get("/repos/pinned", (_request, respond) => {
@@ -39,46 +38,45 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
       .then((resp) => {
         respond.status(200).send(resp.mattgoespro.projects.pinned);
       })
-      .catch((err: GithubRestErrorResponse) => {
-        sendApiErrorResponse(err, "Unable to retrieve pinned Github projects.", respond);
-      });
+      .catch((err: GithubRestErrorResponse) => sendApiErrorResponse(err, "Unable to retrieve pinned Github projects.", respond));
   });
 
   restServer.get("/repos/:repoName/languages", async (request, respond) => {
     const repoName = request.params.repoName;
 
-    doesGitHubRepositoryExist(repoName)
+    doesGithubRepositoryExist(repoName)
       .then(() =>
         httpClient
           .get<{ [key: string]: number }>(`/repos/mattgoespro/${repoName}/languages`)
-          .then((resp) => {
+          .then((resp) =>
             respond.status(200).json({
               languages: resp.data,
-            });
-          })
-          .catch((err: GithubRestErrorResponse) => {
-            sendApiErrorResponse(err, `Unable to retrieve languages for project '${repoName}'.`, respond);
-          })
+            })
+          )
+          .catch((err: GithubRestErrorResponse) => sendApiErrorResponse(err, `Unable to retrieve languages for project '${repoName}'.`, respond))
       )
       .catch(() => sendApiErrorResponse(null, `Project '${repoName}' does not exist.`, respond, 404));
   });
 
   restServer.get("/repos/:repoName/readme", async (request, respond) => {
     const repoName = request.params.repoName;
+    let rsp;
 
-    doesGitHubRepositoryExist(repoName)
-      .then(() =>
-        httpClient
-          .get<{ content: string; encoding: BufferEncoding }>(`/repos/mattgoespro/${repoName}/contents/README.md`)
-          .then((rsp) => {
-            const readme = Buffer.from(rsp.data.content, rsp.data.encoding).toString();
-            respond.status(200).json({ content: readme });
-          })
-          .catch((err: GithubRestErrorResponse) => {
-            respond.status(err.response.status).send(err.response);
-          })
-      )
-      .catch(() => sendApiErrorResponse(null, `Project '${repoName}' does not exist.`, respond, 404));
+    try {
+      rsp = await doesGithubRepositoryExist(repoName);
+    } catch (e) {
+      sendApiErrorResponse(null, `Project '${repoName}' does not exist.`, respond, 404);
+      return;
+    }
+
+    httpClient
+      .get<{ content: string; encoding: BufferEncoding }>(`/repos/mattgoespro/${repoName}/contents/README.md`)
+      .then((rsp) => respond.status(200).json({ content: Buffer.from(rsp.data.content, rsp.data.encoding).toString() }))
+      .catch((err) => {
+        if (err.code === "ERR_BAD_REQUEST") {
+          sendApiErrorResponse(null, `Project '${repoName}' is empty.`, respond, 404);
+        }
+      });
   });
 
   return restServer;
