@@ -43,7 +43,8 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
               projects: pinnedItems(first: 5, types: REPOSITORY) {
                 pinned: nodes {
                   ... on Repository {
-                    name
+                    repositoryName: name
+                    friendlyName: homepage
                     description
                     createdTimestamp: createdAt
                     updatedTimestamp: updatedAt
