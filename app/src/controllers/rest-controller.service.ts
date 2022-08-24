@@ -1,10 +1,10 @@
 import { gql } from "graphql-request";
-import { GithubApiErrorResponse, GithubGqlResponseDTO, GithubRepositoryResponseDTO, sendApiErrorResponse } from "./rest-controller.model";
+import { GithubGqlResponseDTO, GithubRestErrorResponse, GithubRestRepositoryResponseDTO } from "./github-api.model";
 import { Buffer } from "buffer";
 import { graphqlClient } from "../services/gql-client";
 import { axiosHttpClient } from "../services/http-client";
 import restServer from "../rest-server";
-import { ApiRepositoryResponseDTO, GithubRepositoryLanguageResponseDTO } from "../app.model";
+import { mapToApiRepositoryResponseDTO, sendApiErrorResponse } from "./rest-controller.model";
 
 export interface ApiClientDetails {
   githubRestApiTarget: string;
@@ -22,25 +22,14 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
   });
 
   async function doesGitHubRepositoryExist(repoName: string) {
-    return httpClient.get<GithubRepositoryResponseDTO[]>(`/repos/mattgoespro/${repoName}`);
+    return httpClient.get<GithubRestRepositoryResponseDTO[]>(`/repos/mattgoespro/${repoName}`);
   }
 
   restServer.get("/repos", (_request, respond) => {
     httpClient
-      .get<GithubRepositoryResponseDTO[]>(`/users/mattgoespro/repos`)
-      .then((resp) => {
-        // Strip extraneous fields from Github API response body.
-        const repos = resp.data.map<ApiRepositoryResponseDTO>((repo) => ({
-          name: repo.name,
-          description: repo.description,
-          createdTimestamp: repo.created_at,
-          updatedTimestamp: repo.updated_at,
-          link: repo.html_url,
-        }));
-
-        respond.status(200).json(repos);
-      })
-      .catch((err: GithubApiErrorResponse) => {
+      .get<GithubRestRepositoryResponseDTO[]>(`/users/mattgoespro/repos`)
+      .then((resp) => respond.status(200).json(resp.data.map(mapToApiRepositoryResponseDTO)))
+      .catch((err: GithubRestErrorResponse) => {
         sendApiErrorResponse(err, "Unable to retrieve Github projects.", respond);
       });
   });
@@ -69,7 +58,7 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
       .then((resp) => {
         respond.status(200).send(resp.mattgoespro.projects.pinned);
       })
-      .catch((err: GithubApiErrorResponse) => {
+      .catch((err: GithubRestErrorResponse) => {
         sendApiErrorResponse(err, "Unable to retrieve pinned Github projects.", respond);
       });
   });
@@ -86,7 +75,7 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
               languages: resp.data,
             });
           })
-          .catch((err: GithubApiErrorResponse) => {
+          .catch((err: GithubRestErrorResponse) => {
             sendApiErrorResponse(err, `Unable to retrieve languages for project '${repoName}'.`, respond);
           })
       )
@@ -104,7 +93,7 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
             const readme = Buffer.from(rsp.data.content, rsp.data.encoding).toString();
             respond.status(200).json({ content: readme });
           })
-          .catch((err: GithubApiErrorResponse) => {
+          .catch((err: GithubRestErrorResponse) => {
             respond.status(err.response.status).send(err.response);
           })
       )

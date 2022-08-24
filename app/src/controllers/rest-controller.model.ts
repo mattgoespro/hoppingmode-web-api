@@ -1,29 +1,32 @@
 import { Response } from "express";
-import { ApiHttpErrorResponse, ApiRepositoryResponseDTO } from "../app.model";
+import { GithubRestErrorResponse, GithubRestRepositoryResponseDTO } from "./github-api.model";
 
-export interface GithubRepositoryResponseDTO {
-  name: string;
+export interface ApiRepositoryResponseDTO {
+  repositoryName: string;
+  friendlyName: string;
   description: string;
-  created_at: string;
-  updated_at: string;
-  html_url: string;
+  createdTimestamp: string;
+  updatedTimestamp: string;
+  link: string;
 }
 
-export interface GithubGqlResponseDTO {
-  mattgoespro: {
-    projects: {
-      pinned: ApiRepositoryResponseDTO[];
-    };
+export interface ApiHttpErrorResponse {
+  httpErrorCode: number;
+  message: string;
+}
+
+export function mapToApiRepositoryResponseDTO(githubResponseDTO: GithubRestRepositoryResponseDTO): ApiRepositoryResponseDTO {
+  return {
+    repositoryName: githubResponseDTO.name,
+    friendlyName: githubResponseDTO.homepage, // Use homepage repo property to store display name
+    description: githubResponseDTO.description,
+    createdTimestamp: githubResponseDTO.created_at,
+    updatedTimestamp: githubResponseDTO.updated_at,
+    link: githubResponseDTO.html_url,
   };
 }
 
-export interface GithubApiErrorResponse {
-  response: {
-    status: number;
-  };
-}
-
-export function sendApiErrorResponse(githubApiError: GithubApiErrorResponse, message: string, respond: Response, statusCode?: number) {
+export function sendApiErrorResponse(githubApiError: GithubRestErrorResponse, message: string, respond: Response, statusCode?: number) {
   const httpErrorCode: number = statusCode || githubApiError.response.status;
   const apiErrorResponse: ApiHttpErrorResponse = { httpErrorCode, message };
   return respond.status(httpErrorCode).json(apiErrorResponse);
