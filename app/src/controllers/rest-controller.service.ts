@@ -21,24 +21,33 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
   });
 
   async function doesGithubRepositoryExist(repoName: string) {
-    // console.log((await httpClient.get<GithubRestRepositoryResponseDTO[]>(`/repos/mattgoespro/${repoName}`)).data);
     return httpClient.get<GithubRestRepositoryResponseDTO[]>(`/repos/mattgoespro/${repoName}`);
   }
 
-  restServer.get("/repos", (_request, respond) => {
+  restServer.get("/repos/:repoName", (request, respond) => {
+    httpClient
+      .get<GithubRestRepositoryResponseDTO>(`/repos/mattgoespro/${request.params.repoName}`)
+      .then((resp) => {
+        respond.status(200).json(mapToApiRepositoryResponseDTO(resp.data));
+      })
+      .catch((err: GithubRestErrorResponse) => sendApiErrorResponse(err, `Project '${request.params.repoName}' does not exist`, respond));
+  });
+
+  restServer.get("/repos", (request, respond) => {
+    if (request.query.pinned === "true") {
+      gqlClient
+        .getPinnedRepositories()
+        .then((resp) => {
+          respond.status(200).send(resp.mattgoespro.projects.pinned);
+        })
+        .catch((err: GithubRestErrorResponse) => sendApiErrorResponse(err, "Unable to retrieve pinned Github projects.", respond));
+      return;
+    }
+
     httpClient
       .get<GithubRestRepositoryResponseDTO[]>(`/users/mattgoespro/repos`)
       .then((resp) => respond.status(200).json(resp.data.map(mapToApiRepositoryResponseDTO)))
       .catch((err: GithubRestErrorResponse) => sendApiErrorResponse(err, "Unable to retrieve Github projects.", respond));
-  });
-
-  restServer.get("/repos/pinned", (_request, respond) => {
-    gqlClient
-      .getPinnedRepositories()
-      .then((resp) => {
-        respond.status(200).send(resp.mattgoespro.projects.pinned);
-      })
-      .catch((err: GithubRestErrorResponse) => sendApiErrorResponse(err, "Unable to retrieve pinned Github projects.", respond));
   });
 
   restServer.get("/repos/:repoName/languages", async (request, respond) => {

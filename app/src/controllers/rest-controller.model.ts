@@ -27,7 +27,6 @@ export function mapToApiRepositoryResponseDTO(githubResponseDTO: GithubRestRepos
 }
 
 export function sendApiErrorResponse(githubApiError: GithubRestErrorResponse, message: string, respond: Response, statusCode?: number) {
-  console.log(githubApiError);
   const httpErrorCode: number = statusCode || githubApiError.response?.status || 520;
   const apiErrorResponse: ApiHttpErrorResponse = { httpErrorCode, message };
   return respond.status(httpErrorCode).json(apiErrorResponse);
