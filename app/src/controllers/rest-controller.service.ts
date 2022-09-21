@@ -37,7 +37,7 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
   restServer.get("/repos", (request, respond) => {
     const queryParams = request.query;
 
-    if (Object.keys(queryParams).length > 1 || !Object.keys(queryParams).includes("pinned")) {
+    if (!Object.keys(queryParams).includes("pinned")) {
       respond.sendStatus(400);
       return;
     }
