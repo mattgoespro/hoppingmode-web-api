@@ -1,5 +1,6 @@
+import { AxiosError } from "axios";
 import { Response } from "express";
-import { GithubRestErrorResponse, GithubRestRepositoryResponseDTO } from "./github-api.model";
+import { GithubRestRepositoryResponseDTO } from "./github-api.model";
 
 export interface ApiRepositoryResponseDTO {
   repositoryName: string;
@@ -26,8 +27,10 @@ export function mapToApiRepositoryResponseDTO(githubResponseDTO: GithubRestRepos
   };
 }
 
-export function sendApiErrorResponse(githubApiError: GithubRestErrorResponse, message: string, respond: Response, statusCode?: number) {
-  const httpErrorCode: number = statusCode || githubApiError.response?.status || 520;
-  const apiErrorResponse: ApiHttpErrorResponse = { httpErrorCode, message };
-  return respond.status(httpErrorCode).json(apiErrorResponse);
+export function sendErrorResponse(error: AxiosError, respond: Response) {
+  if (error.response) {
+    return respond.sendStatus(error.response.status);
+  } else if (error.request) {
+    return respond.sendStatus(503);
+  }
 }

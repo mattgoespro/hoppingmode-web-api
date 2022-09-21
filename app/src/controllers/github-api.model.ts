@@ -23,10 +23,3 @@ export interface GithubGqlResponseDTO {
     };
   };
 }
-
-export interface GithubRestErrorResponse {
-  response: {
-    status: number;
-    statusText: string;
-  };
-}
