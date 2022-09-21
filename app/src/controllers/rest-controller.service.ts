@@ -37,11 +37,6 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
   restServer.get("/repos", (request, respond) => {
     const queryParams = request.query;
 
-    if (!Object.keys(queryParams).includes("pinned")) {
-      respond.sendStatus(400);
-      return;
-    }
-
     if (queryParams.pinned === "true") {
       gqlClient
         .getPinnedRepositories()
