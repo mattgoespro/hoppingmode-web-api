@@ -72,25 +72,21 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
 
   restServer.get("/repos/:repoName/readme", async (request, respond) => {
     const repoName = request.params.repoName;
-    let rsp;
 
-    try {
-      rsp = await doesGithubRepositoryExist(repoName);
-    } catch (err) {
-      sendErrorResponse(err, respond);
-      return;
-    }
-
-    httpClient
-      .get<{ content: string; encoding: BufferEncoding }>(`/repos/mattgoespro/${repoName}/contents/README.md`)
-      .then((rsp) => respond.status(200).json({ content: Buffer.from(rsp.data.content, rsp.data.encoding).toString() }))
+    doesGithubRepositoryExist(repoName)
+      .then(() => {
+        httpClient
+          .get<{ content: string; encoding: BufferEncoding }>(`/repos/mattgoespro/${repoName}/contents/README.md`)
+          .then((rsp) => respond.status(200).json({ content: Buffer.from(rsp.data.content, rsp.data.encoding).toString() }))
+          .catch((err) => {
+            if (err.code === AxiosError.ERR_BAD_REQUEST) {
+              // Repo has been created but is unprepared to take requests.
+              respond.status(200).json({ content: "" });
+            }
+          });
+      })
       .catch((err) => {
-        if (err.code === AxiosError.ERR_BAD_REQUEST) {
-          // Repo has been created but is unprepared to take requests.
-          respond.status(200).json({ content: "" });
-        }
+        sendErrorResponse(err, respond);
       });
   });
-
-  return restServer;
 };
