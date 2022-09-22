@@ -9,6 +9,11 @@ export interface GithubRestRepositoryResponseDTO {
   html_url: string;
 }
 
+export interface GithubRestFileResponseDTO {
+  content: string;
+  encoding: BufferEncoding;
+}
+
 export interface GithubGqlErrorResponse {
   response: {
     status: number;

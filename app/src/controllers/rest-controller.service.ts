@@ -1,4 +1,4 @@
-import { GithubRestRepositoryResponseDTO } from "./github-api.model";
+import { GithubRestFileResponseDTO, GithubRestRepositoryResponseDTO } from "./github-api.model";
 import { Buffer } from "buffer";
 import { axiosHttpClient } from "../services/http-client";
 import restServer from "../rest-server";
@@ -23,6 +23,11 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
 
   async function doesGithubRepositoryExist(repoName: string) {
     return httpClient.get<GithubRestRepositoryResponseDTO[]>(`/repos/mattgoespro/${repoName}`);
+  }
+
+  async function doesFileExist(repoName: string, fileName: string) {
+    const files = await httpClient.get<{ name: string }[]>(`/repos/mattgoespro/${repoName}/contents`);
+    return files.data.find((file) => file.name === fileName);
   }
 
   restServer.get("/repos/:repoName", (request, respond) => {
@@ -75,18 +80,52 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
 
     doesGithubRepositoryExist(repoName)
       .then(() => {
-        httpClient
-          .get<{ content: string; encoding: BufferEncoding }>(`/repos/mattgoespro/${repoName}/contents/README.md`)
-          .then((rsp) => respond.status(200).json({ content: Buffer.from(rsp.data.content, rsp.data.encoding).toString() }))
+        doesFileExist(repoName, "README.md")
+          .then(() => {
+            httpClient
+              .get<GithubRestFileResponseDTO>(`/repos/mattgoespro/${repoName}/contents/README.md`)
+              .then((rsp) => respond.status(200).json({ content: Buffer.from(rsp.data.content, rsp.data.encoding).toString() }))
+              .catch((err) => {
+                if (err.code === AxiosError.ERR_BAD_REQUEST) {
+                  // Repo has been created but is unprepared to take requests.
+                  respond.status(200).json({ content: "" });
+                }
+              });
+          })
           .catch((err) => {
-            if (err.code === AxiosError.ERR_BAD_REQUEST) {
-              // Repo has been created but is unprepared to take requests.
-              respond.status(200).json({ content: "" });
-            }
+            sendErrorResponse(err, respond);
           });
       })
       .catch((err) => {
         sendErrorResponse(err, respond);
       });
   });
+
+  restServer.get("/repos/:repoName/skills", async (request, respond) => {
+    const repoName = request.params.repoName;
+
+    doesGithubRepositoryExist(repoName)
+      .then(() => {
+        doesFileExist(repoName, "portfolio.json")
+          .then(() => {
+            httpClient
+              .get<GithubRestFileResponseDTO>(`/repos/mattgoespro/${repoName}/contents/portfolio.json`)
+              .then((rsp) => respond.status(200).json(JSON.parse(Buffer.from(rsp.data.content, rsp.data.encoding).toString())))
+              .catch((err) => {
+                if (err.code === AxiosError.ERR_BAD_REQUEST) {
+                  // Repo has been created but is unprepared to take requests.
+                  respond.status(200).json({ content: "" });
+                }
+              });
+          })
+          .catch((err) => {
+            sendErrorResponse(err, respond);
+          });
+      })
+      .catch((err) => {
+        sendErrorResponse(err, respond);
+      });
+  });
+
+  return restServer;
 };
