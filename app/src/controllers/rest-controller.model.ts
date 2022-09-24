@@ -1,11 +1,11 @@
 import { AxiosError } from "axios";
 import { Response } from "express";
-import { GithubRestRepositoryResponseDTO } from "./github-api.model";
+import { GithubApiRepositoryResponse } from "./github-api.model";
 
-export interface ApiRepositoryResponseDTO {
-  repositoryName: string;
-  friendlyName: string;
-  description: string;
+export interface ApiRepositoryResponse {
+  name: string;
+  pinned: boolean;
+  description?: string;
   createdTimestamp: string;
   updatedTimestamp: string;
   link: string;
@@ -16,10 +16,10 @@ export interface ApiHttpErrorResponse {
   message: string;
 }
 
-export function mapToApiRepositoryResponseDTO(githubResponseDTO: GithubRestRepositoryResponseDTO): ApiRepositoryResponseDTO {
+export function mapGitHubToApi(githubResponseDTO: GithubApiRepositoryResponse, pinned: boolean): ApiRepositoryResponse {
   return {
-    repositoryName: githubResponseDTO.name,
-    friendlyName: githubResponseDTO.homepage, // Use homepage repo property to store display name
+    name: githubResponseDTO.name,
+    pinned,
     description: githubResponseDTO.description,
     createdTimestamp: githubResponseDTO.created_at,
     updatedTimestamp: githubResponseDTO.updated_at,

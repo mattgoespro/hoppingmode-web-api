@@ -1,8 +1,8 @@
-import { GithubRestFileResponseDTO, GithubRestRepositoryResponseDTO } from "./github-api.model";
+import { GithubApiFileResponse, GithubApiRepositoryResponse } from "./github-api.model";
 import { Buffer } from "buffer";
 import { axiosHttpClient } from "../services/http-client";
 import restServer from "../rest-server";
-import { mapToApiRepositoryResponseDTO, sendErrorResponse } from "./rest-controller.model";
+import { sendErrorResponse, mapGitHubToApi, ApiRepositoryResponse } from "./rest-controller.model";
 import { GithubGraphQlClient } from "../services/gql-client";
 import { AxiosError } from "axios";
 
@@ -22,35 +22,39 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
   });
 
   async function doesGithubRepositoryExist(repoName: string) {
-    return httpClient.get<GithubRestRepositoryResponseDTO[]>(`/repos/mattgoespro/${repoName}`);
+    return httpClient.get<GithubApiRepositoryResponse[]>(`/repos/mattgoespro/${repoName}`);
   }
 
   restServer.get("/repos/:repoName", (request, respond) => {
     httpClient
-      .get<GithubRestRepositoryResponseDTO>(`/repos/mattgoespro/${request.params.repoName}`)
+      .get<GithubApiRepositoryResponse>(`/repos/mattgoespro/${request.params.repoName}`)
       .then((resp) => {
-        respond.status(200).json(mapToApiRepositoryResponseDTO(resp.data));
+        respond.status(200).json(mapGitHubToApi(resp.data, null));
       })
       .catch((err) => sendErrorResponse(err, respond));
   });
 
-  restServer.get("/repos", (request, respond) => {
-    const queryParams = request.query;
+  async function getPinnedRepositories(): Promise<ApiRepositoryResponse[]> {
+    const gqlResponse = await gqlClient.getPinnedRepositories();
+    return gqlResponse.response.projects.pinned.map((project) => mapGitHubToApi(project, true));
+  }
 
-    if (queryParams.pinned === "true") {
-      gqlClient
-        .getPinnedRepositories()
-        .then((resp) => {
-          respond.status(200).send(resp.mattgoespro.projects.pinned);
-        })
-        .catch((err) => sendErrorResponse(err, respond));
+  async function getUnpinnedRepositories(withoutPinned: ApiRepositoryResponse[]) {
+    const apiResponse = (await httpClient.get<GithubApiRepositoryResponse[]>(`/users/mattgoespro/repos`)).data;
+    return apiResponse
+      .filter((project) => withoutPinned.findIndex((p) => p.name === project.name) === -1)
+      .map((project) => mapGitHubToApi(project, false));
+  }
+
+  restServer.get("/repos", async (_request, respond) => {
+    try {
+      const pinnedRepos = await getPinnedRepositories();
+      const unpinnedRepos = await getUnpinnedRepositories(pinnedRepos);
+      respond.status(200).json(pinnedRepos.concat(unpinnedRepos));
+    } catch (e) {
+      sendErrorResponse(e, respond);
       return;
     }
-
-    httpClient
-      .get<GithubRestRepositoryResponseDTO[]>(`/users/mattgoespro/repos`)
-      .then((resp) => respond.status(200).json(resp.data.map(mapToApiRepositoryResponseDTO)))
-      .catch((err) => sendErrorResponse(err, respond));
   });
 
   restServer.get("/repos/:repoName/languages", async (request, respond) => {
@@ -76,12 +80,12 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
     doesGithubRepositoryExist(repoName)
       .then(() => {
         httpClient
-          .get<GithubRestFileResponseDTO>(`/repos/mattgoespro/${repoName}/contents/README.md`)
+          .get<GithubApiFileResponse>(`/repos/mattgoespro/${repoName}/contents/README.md`)
           .then((rsp) => respond.status(200).json({ content: Buffer.from(rsp.data.content, rsp.data.encoding).toString() }))
           .catch((err) => {
             if (err.code === AxiosError.ERR_BAD_REQUEST) {
-              // Repo has been created but is unprepared to take requests.
-              respond.status(200).json({ content: "" });
+              // Repo has been created but cannot be queried.
+              respond.status(200).json({ content: null });
             }
           });
       })
@@ -96,7 +100,7 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
     doesGithubRepositoryExist(repoName)
       .then(() => {
         httpClient
-          .get<GithubRestFileResponseDTO>(`/repos/mattgoespro/${repoName}/contents/portfolio.json`)
+          .get<GithubApiFileResponse>(`/repos/mattgoespro/${repoName}/contents/portfolio.json`)
           .then((rsp) => respond.status(200).json(JSON.parse(Buffer.from(rsp.data.content, rsp.data.encoding).toString())))
           .catch((err) => {
             if (err.code === AxiosError.ERR_BAD_REQUEST) {

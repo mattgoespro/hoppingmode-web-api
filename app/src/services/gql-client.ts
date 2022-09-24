@@ -1,5 +1,5 @@
 import { gql, GraphQLClient } from "graphql-request";
-import { GithubGqlResponseDTO } from "../controllers/github-api.model";
+import { GithubGqlResponse } from "../controllers/github-api.model";
 import { ApiClientDetails } from "../controllers/rest-controller.service";
 
 export class GithubGraphQlClient {
@@ -14,20 +14,19 @@ export class GithubGraphQlClient {
     });
   }
 
-  public async getPinnedRepositories(): Promise<GithubGqlResponseDTO> {
-    return this.gqlClient.request<GithubGqlResponseDTO>(
+  public async getPinnedRepositories(): Promise<GithubGqlResponse> {
+    return this.gqlClient.request<GithubGqlResponse>(
       gql`
         query GithubPinnedProjects {
-          mattgoespro: user(login: "mattgoespro") {
+          response: user(login: "mattgoespro") {
             projects: pinnedItems(first: 6, types: REPOSITORY) {
               pinned: nodes {
                 ... on Repository {
-                  repositoryName: name
-                  friendlyName: homepageUrl
+                  name
                   description
-                  createdTimestamp: createdAt
-                  updatedTimestamp: updatedAt
-                  link: url
+                  created_at: createdAt
+                  updated_at: updatedAt
+                  html_url: url
                 }
               }
             }

@@ -1,30 +1,20 @@
-import { ApiRepositoryResponseDTO } from "./rest-controller.model";
-
-export interface GithubRestRepositoryResponseDTO {
+export interface GithubApiRepositoryResponse {
   name: string;
   description: string;
-  homepage: string;
   created_at: string;
   updated_at: string;
   html_url: string;
 }
 
-export interface GithubRestFileResponseDTO {
+export interface GithubApiFileResponse {
   content: string;
   encoding: BufferEncoding;
 }
 
-export interface GithubGqlErrorResponse {
+export interface GithubGqlResponse {
   response: {
-    status: number;
-    message: string;
-  };
-}
-
-export interface GithubGqlResponseDTO {
-  mattgoespro: {
     projects: {
-      pinned: ApiRepositoryResponseDTO[];
+      pinned: GithubApiRepositoryResponse[];
     };
   };
 }
