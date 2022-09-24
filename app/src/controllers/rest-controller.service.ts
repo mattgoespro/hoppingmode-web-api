@@ -2,7 +2,13 @@ import { GithubApiFileResponse, GithubApiRepositoryResponse } from "./github-api
 import { Buffer } from "buffer";
 import { axiosHttpClient } from "../services/http-client";
 import restServer from "../rest-server";
-import { sendErrorResponse, mapGitHubToApi, ApiRepositoryResponse } from "./rest-controller.model";
+import {
+  sendErrorResponse,
+  mapGitHubToApi,
+  ApiRepositoryResponse,
+  LanguageComposition,
+  mapLanguageCompositionToPercentage,
+} from "./rest-controller.model";
 import { GithubGraphQlClient } from "../services/gql-client";
 import { AxiosError } from "axios";
 
@@ -63,12 +69,8 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
     doesGithubRepositoryExist(repoName)
       .then(() =>
         httpClient
-          .get<{ [key: string]: number }>(`/repos/mattgoespro/${repoName}/languages`)
-          .then((resp) =>
-            respond.status(200).json({
-              languages: resp.data,
-            })
-          )
+          .get<LanguageComposition>(`/repos/mattgoespro/${repoName}/languages`)
+          .then((resp) => respond.status(200).json(mapLanguageCompositionToPercentage(resp.data)))
           .catch((err) => sendErrorResponse(err, respond))
       )
       .catch((err) => sendErrorResponse(err, respond));

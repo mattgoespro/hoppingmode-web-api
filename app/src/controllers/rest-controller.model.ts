@@ -11,9 +11,30 @@ export interface ApiRepositoryResponse {
   link: string;
 }
 
-export interface ApiHttpErrorResponse {
-  httpErrorCode: number;
-  message: string;
+export type LanguageComposition = { [key: string]: number };
+
+export function mapLanguageCompositionToPercentage(languageComposition: LanguageComposition) {
+  const totalValues = Object.values(languageComposition).reduce((val, s) => val + s, 0);
+  let totalPercentage = 0;
+  const languagePercentages: LanguageComposition = {};
+
+  for (const language in languageComposition) {
+    const percentage = Math.floor((languageComposition[language] / totalValues) * 100);
+
+    // Language contribution is so little, ignore it.
+    if (percentage === 0) {
+      continue;
+    }
+
+    languagePercentages[language] = percentage;
+    totalPercentage += percentage;
+  }
+
+  if (totalPercentage < 100) {
+    languagePercentages[Object.keys(languageComposition)[0]] += 100 - totalPercentage;
+  }
+
+  return languagePercentages;
 }
 
 export function mapGitHubToApi(githubResponseDTO: GithubApiRepositoryResponse, pinned: boolean): ApiRepositoryResponse {
