@@ -94,7 +94,7 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
       });
   });
 
-  restServer.get("/repos/:repoName/skills", async (request, respond) => {
+  restServer.get("/repos/:repoName/portfolio", async (request, respond) => {
     const repoName = request.params.repoName;
 
     doesGithubRepositoryExist(repoName)
@@ -103,9 +103,7 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
           .get<GithubApiFileResponse>(`/repos/mattgoespro/${repoName}/contents/portfolio.json`)
           .then((rsp) => respond.status(200).json(JSON.parse(Buffer.from(rsp.data.content, rsp.data.encoding).toString())))
           .catch((err) => {
-            if (err.code === AxiosError.ERR_BAD_REQUEST) {
-              respond.status(200).json({ skills: [] });
-            }
+            sendErrorResponse(err, respond);
           });
       })
       .catch((err) => {
