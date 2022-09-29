@@ -70,7 +70,11 @@ export const RestApiServer = (apiDetails: ApiClientDetails) => {
       .then(() =>
         httpClient
           .get<LanguageComposition>(`/repos/mattgoespro/${repoName}/languages`)
-          .then((resp) => respond.status(200).json(mapLanguageCompositionToPercentage(resp.data)))
+          .then((resp) =>
+            respond.status(200).json({
+              languages: mapLanguageCompositionToPercentage(resp.data),
+            })
+          )
           .catch((err) => sendErrorResponse(err, respond))
       )
       .catch((err) => sendErrorResponse(err, respond));
