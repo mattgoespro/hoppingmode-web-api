@@ -1,7 +1,7 @@
 import { githubApiLogin, githubGraphqlApiTarget, githubRestApiTarget } from "./environment";
 import dotenv from "dotenv";
 import generateBanner from "figlet";
-import { RestApiServer } from "./src/controllers/rest-controller.service";
+import { RestApiServer } from "./src/services/api-controller.service";
 
 // Process .env file
 delete process.env.GITHUB_API_PAT;

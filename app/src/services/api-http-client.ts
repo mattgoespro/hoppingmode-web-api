@@ -1,8 +1,9 @@
-import { ApiResponse, RepositoryDetails, RepositoryLanguages, RepositorySummary } from "@mattgoespro/hoppingmode-web";
+import { RepositoryDetails, RepositoryLanguages, RepositorySummary } from "@mattgoespro/hoppingmode-web";
 import axios, { AxiosStatic } from "axios";
 import { gql, GraphQLClient } from "graphql-request";
-import { ApiClientDetails } from "../controllers/rest-controller.service";
+import { ApiClientDetails } from "./api-controller.service";
 import { GitHubLanguageComposition, GitHubRepository, GitHubRepositoryDetails, GitHubRepositoryList } from "./github.model";
+import { cascadeRounding } from "./util";
 
 const HttpClient = (details: ApiClientDetails) => {
   axios.defaults.headers.common["Authorization"] = `token ${details.githubApiPat}`;
@@ -25,7 +26,7 @@ export class ApiHttpClient {
     this.httpClient = HttpClient(apiInfo);
   }
 
-  public async getRepositorySummaries(): Promise<ApiResponse<RepositorySummary[]>> {
+  public async getRepositorySummaries(): Promise<RepositorySummary[]> {
     const isPortfolioRepo = (repo: GitHubRepository) => repo.repo_topics.topics.findIndex((t) => t.topic.name === "portfolio") !== -1;
     const mapToRepoSummary = (repo: GitHubRepository, pinned: boolean): RepositorySummary => ({
       name: repo.name,
@@ -42,9 +43,7 @@ export class ApiHttpClient {
       .filter((repo) => pinnedRepos.findIndex((r) => r.name === repo.name) === -1)
       .map<RepositorySummary>((repo) => mapToRepoSummary(repo, false));
 
-    return {
-      payload: pinnedRepos.concat(unpinnedRepos),
-    };
+    return pinnedRepos.concat(unpinnedRepos);
   }
 
   private async queryGitHubRepositories(): Promise<GitHubRepositoryList> {
@@ -94,7 +93,7 @@ export class ApiHttpClient {
     );
   }
 
-  public async getRepository(repoName: string): Promise<ApiResponse<RepositoryDetails>> {
+  public async getRepository(repoName: string): Promise<RepositoryDetails> {
     const resp = await this.gqlClient.request<GitHubRepositoryDetails>(
       gql`
         query GitHubRepositoryPortfolio {
@@ -124,30 +123,37 @@ export class ApiHttpClient {
     const repository = resp.payload.repository;
 
     return {
-      payload: {
-        name: repository.name,
-        createdTimestamp: repository.createdAt,
-        updatedTimestamp: repository.updatedAt,
-        portfolioSpec: JSON.parse(repository.portfolioSpec.spec),
-        readmeDoc: Buffer.from(repository.readmeDoc.content).toString("base64"),
-      },
+      name: repository.name,
+      createdTimestamp: repository.createdAt,
+      updatedTimestamp: repository.updatedAt,
+      portfolioSpec: JSON.parse(repository.portfolioSpec.spec),
+      readmeDoc: Buffer.from(repository.readmeDoc.content).toString("base64"),
     };
   }
 
-  public async getLanguages(repoName: string): Promise<ApiResponse<RepositoryLanguages[]>> {
-    const resp = await this.httpClient.get<GitHubLanguageComposition>(`/repos/mattgoespro/${repoName}/languages`);
+  private calcLanguagePercentage(languages: RepositoryLanguages) {
+    const totalBytes = Object.values(languages).reduce((val, s) => val + s, 0);
+    const rawPercentages = Object.values(languages).map((numBytes) => (numBytes / totalBytes) * 100);
+    const roundedPercentages = cascadeRounding(rawPercentages);
 
-    const languages: RepositoryLanguages[] = [];
+    const languagePercentages: RepositoryLanguages = {};
+    let index = 0;
 
-    for (const language in resp.data) {
-      languages.push({
-        language,
-        bytes: resp.data[language],
-      });
+    for (const lang in languages) {
+      // Percentage contribution is insignificant, ignore
+      if (roundedPercentages[index] === 0) {
+        continue;
+      }
+
+      languagePercentages[lang] = roundedPercentages[index];
+      ++index;
     }
 
-    return {
-      payload: languages,
-    };
+    return languagePercentages;
+  }
+
+  public async getLanguages(repoName: string): Promise<RepositoryLanguages> {
+    const resp = await this.httpClient.get<GitHubLanguageComposition>(`/repos/mattgoespro/${repoName}/languages`);
+    return this.calcLanguagePercentage(resp.data);
   }
 }
