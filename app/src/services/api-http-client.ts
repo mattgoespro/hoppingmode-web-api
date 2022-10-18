@@ -1,7 +1,7 @@
+import { ApiResponse, RepositoryDetails, RepositoryLanguages, RepositorySummary } from "@mattgoespro/hoppingmode-web";
 import axios, { AxiosStatic } from "axios";
 import { gql, GraphQLClient } from "graphql-request";
 import { ApiClientDetails } from "../controllers/rest-controller.service";
-import { ApiResponse, RepositoryDetails, RepositoryLanguages, RepositorySummary } from "./api.model";
 import { GitHubLanguageComposition, GitHubRepository, GitHubRepositoryDetails, GitHubRepositoryList } from "./github.model";
 
 const HttpClient = (details: ApiClientDetails) => {
