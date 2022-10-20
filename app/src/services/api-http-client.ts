@@ -99,14 +99,21 @@ export class ApiHttpClient {
         {
           payload: user(login: "mattgoespro") {
             repository(name: "${repoName}") {
-              portfolioSpec: object(expression: "main:portfolio.json") {
+              projectSpec: object(expression: "main:portfolio.json") {
                 ... on Blob {
                   spec: text
                 }
               }
-              readmeDoc: object(expression: "main:README.md") {
+              readme: object(expression: "main:README.md") {
                 ... on Blob {
                   content: text
+                }
+              }
+              commit: object(expression: "main") {
+                ... on Commit {
+                  history {
+                    totalCount
+                  }
                 }
               }
               ... on Repository {
@@ -121,17 +128,21 @@ export class ApiHttpClient {
     );
 
     const repository = resp.payload.repository;
-    const projectSpec: ProjectSpecification = JSON.parse(repository.portfolioSpec.spec);
+    const spec: ProjectSpecification = JSON.parse(repository.projectSpec.spec);
+
     return {
       name: repository.name,
       stats: {
         createdTimestamp: repository.createdAt,
         updatedTimestamp: repository.updatedAt,
-        totalCommits: 0,
+        totalCommits: repository.commit.history.totalCount,
       },
-      projectSpec,
+      projectSpec: {
+        title: spec.title,
+        technicalSkills: spec.technicalSkills,
+      },
       readme: {
-        content: Buffer.from(repository.readmeDoc.content).toString("base64"),
+        content: Buffer.from(repository.readme.content).toString("base64"),
         encoding: "base64",
       },
     };

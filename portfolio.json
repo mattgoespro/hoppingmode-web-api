@@ -1,4 +1,4 @@
 {
-  "name": "hoppingmode-web-api: A backend REST API",
-  "skills": ["Express.js", "Node.js", "Docker"]
+  "title": "hoppingmode-web-api: A backend REST API",
+  "technicalSkills": ["Express.js", "Node.js", "Docker"]
 }

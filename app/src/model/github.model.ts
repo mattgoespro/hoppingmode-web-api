@@ -27,11 +27,16 @@ export interface GitHubRepositoryList {
 export interface GitHubRepositoryDetails {
   payload: {
     repository: {
-      portfolioSpec: {
+      projectSpec: {
         spec: string;
       };
-      readmeDoc: {
+      readme: {
         content: string;
+      };
+      commit: {
+        history: {
+          totalCount: number;
+        };
       };
       name: string;
       createdAt: string;
