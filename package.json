@@ -11,7 +11,7 @@
   },
   "author": "hoppingmode",
   "dependencies": {
-    "@mattgoespro/hoppingmode-web": "^1.0.1",
+    "@mattgoespro/hoppingmode-web": "^1.0.13",
     "axios": "^0.27.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.2",

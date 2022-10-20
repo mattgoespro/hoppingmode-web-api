@@ -41,3 +41,19 @@ export interface GitHubRepositoryDetails {
 }
 
 export type GitHubLanguageComposition = { [key: string]: number };
+
+export interface GitHubGraphqlErrorResponse {
+  errors: GitHubGraphqlError[];
+}
+
+type GraphqlErrorType = "NOT_FOUND";
+
+export interface GitHubGraphqlError {
+  type: GraphqlErrorType;
+  path: string[];
+  locations: {
+    line: number;
+    column: number;
+  }[];
+  message: string;
+}

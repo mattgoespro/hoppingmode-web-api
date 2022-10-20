@@ -1,16 +1,10 @@
 import restServer from "../app";
+import { GitHubApiConnectionInfo } from "../model/app.model";
 import { ApiHttpClient } from "./api-http-client";
 import { respondWithApiError } from "./util";
 
-export interface ApiClientDetails {
-  githubRestApiTarget: string;
-  githubGraphqlApiTarget: string;
-  githubApiLogin: string;
-  githubApiPat: string;
-}
-
-export const RestApiServer = (apiDetails: ApiClientDetails) => {
-  const apiClient = new ApiHttpClient(apiDetails);
+export const RestApiServer = (connectionInfo: GitHubApiConnectionInfo) => {
+  const apiClient = new ApiHttpClient(connectionInfo);
 
   restServer.get("/", (_request, respond) => {
     respond.send("Hello, this is dog.");

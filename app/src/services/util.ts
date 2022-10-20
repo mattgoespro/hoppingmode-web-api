@@ -1,6 +1,8 @@
 import { AxiosError } from "axios";
 import { Response } from "express";
 import { ClientError } from "graphql-request";
+import { GraphQLResponse } from "graphql-request/dist/types";
+import { GitHubGraphqlErrorResponse } from "../model/github.model";
 
 /*
  *  Given an array of floats that sum to an integer, this rounds the floats
@@ -43,15 +45,8 @@ export function respondWithApiError(respond: Response, err: AxiosError | ClientE
     const error: ClientError = err;
 
     if (error.response) {
-      /**
-       * Server responded with (5xx, 4xx) error code
-       */
-      respond.sendStatus(error.response.status);
+      const resp = error.response as GraphQLResponse & GitHubGraphqlErrorResponse;
     } else if (err.request) {
-      /**
-       * Server did not receive a response, request was never
-       * transmitted.
-       */
       respond.sendStatus(500);
     }
   }

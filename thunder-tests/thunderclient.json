@@ -1,0 +1,30 @@
+[
+  {
+    "_id": "4d69721c-bf15-4383-bdab-787bd31dc7b8",
+    "colId": "89fef53b-419b-4e8b-ad88-ad9499b44e42",
+    "containerId": "",
+    "name": "List Repositories",
+    "url": "/repos",
+    "method": "GET",
+    "sortNum": 10000,
+    "created": "2022-10-20T16:42:37.740Z",
+    "modified": "2022-10-20T16:42:47.086Z",
+    "headers": [],
+    "params": [],
+    "tests": []
+  },
+  {
+    "_id": "03ee08c5-4cbf-46cc-8ad3-4cade900f3a0",
+    "colId": "89fef53b-419b-4e8b-ad88-ad9499b44e42",
+    "containerId": "",
+    "name": "View Repository",
+    "url": "/repos/xx",
+    "method": "GET",
+    "sortNum": 20000,
+    "created": "2022-10-20T16:45:24.442Z",
+    "modified": "2022-10-20T16:49:11.268Z",
+    "headers": [],
+    "params": [],
+    "tests": []
+  }
+]

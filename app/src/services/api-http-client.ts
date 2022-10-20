@@ -1,14 +1,13 @@
 import { RepositoryDetails, RepositoryLanguages, RepositorySummary } from "@mattgoespro/hoppingmode-web";
 import axios, { AxiosStatic } from "axios";
 import { gql, GraphQLClient } from "graphql-request";
-import { Response } from "graphql-request/dist/types";
-import { ApiClientDetails } from "./api-controller.service";
-import { GitHubLanguageComposition, GitHubRepository, GitHubRepositoryDetails, GitHubRepositoryList } from "./github.model";
+import { GitHubApiConnectionInfo } from "../model/app.model";
+import { GitHubLanguageComposition, GitHubRepository, GitHubRepositoryDetails, GitHubRepositoryList } from "../model/github.model";
 import { cascadeRounding } from "./util";
 
-const HttpClient = (details: ApiClientDetails) => {
-  axios.defaults.headers.common["Authorization"] = `token ${details.githubApiPat}`;
-  axios.defaults.baseURL = details.githubRestApiTarget;
+const HttpClient = (connectionInfo: GitHubApiConnectionInfo) => {
+  axios.defaults.headers.common["Authorization"] = `token ${connectionInfo.authToken}`;
+  axios.defaults.baseURL = connectionInfo.restServerUrl;
   axios.defaults.timeout = 2000;
   return axios;
 };
@@ -17,14 +16,14 @@ export class ApiHttpClient {
   private gqlClient: GraphQLClient;
   private httpClient: AxiosStatic;
 
-  constructor(apiInfo: ApiClientDetails) {
-    this.gqlClient = new GraphQLClient(apiInfo.githubGraphqlApiTarget, {
+  constructor(connectionInfo: GitHubApiConnectionInfo) {
+    this.gqlClient = new GraphQLClient(connectionInfo.gqlServerUrl, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `bearer ${apiInfo.githubApiPat}`,
+        Authorization: `bearer ${connectionInfo.authToken}`,
       },
     });
-    this.httpClient = HttpClient(apiInfo);
+    this.httpClient = HttpClient(connectionInfo);
   }
 
   public async getRepositorySummaries(): Promise<RepositorySummary[]> {

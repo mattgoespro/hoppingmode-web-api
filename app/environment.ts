@@ -1,3 +1,3 @@
-export const githubRestApiTarget = "https://api.github.com";
-export const githubGraphqlApiTarget = "https://api.github.com/graphql";
-export const githubApiLogin = "mattgoespro";
+export const githubRestServerUrl = "https://api.github.com";
+export const githubGraphqlServerUrl = "https://api.github.com/graphql";
+export const githubUsername = "mattgoespro";

@@ -1,23 +1,29 @@
-import { githubApiLogin, githubGraphqlApiTarget, githubRestApiTarget } from "./environment";
+import { githubUsername, githubGraphqlServerUrl, githubRestServerUrl } from "./environment";
 import dotenv from "dotenv";
 import generateBanner from "figlet";
 import { RestApiServer } from "./src/services/api-controller.service";
 
-// Process .env file
-delete process.env.GITHUB_API_PAT;
-dotenv.config();
+// Inject environment variables
+delete process.env.GITHUB_AUTH_TOKEN;
 
-const githubApiPat = process.env.GITHUB_API_PAT as unknown as string;
+const envVariables = dotenv.config();
 
-if (githubApiPat == null) {
-  console.log("WARN: Requests will be sent without authorization.");
+if (envVariables.error) {
+  throw new Error("Environment file not found.");
+}
+
+const githubAuthToken = envVariables.parsed.GITHUB_AUTH_TOKEN;
+const githubTokenCheck = /^ghp_[A-Za-z0-9]{36}$/;
+
+if (githubAuthToken == null || !githubTokenCheck.test(githubAuthToken)) {
+  console.log("Invalid authorization token.");
 }
 
 RestApiServer({
-  githubRestApiTarget,
-  githubGraphqlApiTarget,
-  githubApiLogin,
-  githubApiPat,
+  restServerUrl: githubRestServerUrl,
+  gqlServerUrl: githubGraphqlServerUrl,
+  username: githubUsername,
+  authToken: githubAuthToken,
 }).listen(3000, () => {
   console.log(
     generateBanner.textSync("Server    started   ...", {
