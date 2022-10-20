@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import { Response } from "express";
+import { ClientError } from "graphql-request";
 
 /*
  *  Given an array of floats that sum to an integer, this rounds the floats
@@ -22,12 +23,11 @@ export function cascadeRounding(array: number[]): number[] {
   return roundedArray;
 }
 
-export function respondWithApiError(respond: Response, err: AxiosError | Error) {
+export function respondWithApiError(respond: Response, err: AxiosError | ClientError) {
   if ("isAxiosError" in err) {
     const error: AxiosError = err;
 
     if (error.response) {
-      console.log(error.response);
       /**
        * Server responded with (5xx, 4xx) error code
        */
@@ -39,9 +39,20 @@ export function respondWithApiError(respond: Response, err: AxiosError | Error) 
        */
       respond.sendStatus(500);
     }
+  } else {
+    const error: ClientError = err;
 
-    return;
+    if (error.response) {
+      /**
+       * Server responded with (5xx, 4xx) error code
+       */
+      respond.sendStatus(error.response.status);
+    } else if (err.request) {
+      /**
+       * Server did not receive a response, request was never
+       * transmitted.
+       */
+      respond.sendStatus(500);
+    }
   }
-
-  respond.sendStatus(500);
 }

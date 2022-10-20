@@ -1,6 +1,7 @@
 import { RepositoryDetails, RepositoryLanguages, RepositorySummary } from "@mattgoespro/hoppingmode-web";
 import axios, { AxiosStatic } from "axios";
 import { gql, GraphQLClient } from "graphql-request";
+import { Response } from "graphql-request/dist/types";
 import { ApiClientDetails } from "./api-controller.service";
 import { GitHubLanguageComposition, GitHubRepository, GitHubRepositoryDetails, GitHubRepositoryList } from "./github.model";
 import { cascadeRounding } from "./util";
