@@ -1,4 +1,4 @@
-import { RepositoryDetails, RepositoryLanguages, RepositorySummary } from "@mattgoespro/hoppingmode-web";
+import { ProgrammingLanguages, ProjectSpecification, Repository, RepositorySummary } from "@mattgoespro/hoppingmode-web";
 import axios, { AxiosStatic } from "axios";
 import { gql, GraphQLClient } from "graphql-request";
 import { GitHubApiConnectionInfo } from "../model/app.model";
@@ -61,7 +61,7 @@ export class ApiHttpClient {
 
     return this.gqlClient.request<GitHubRepositoryList>(
       gql`
-        query GitHubRepositories {
+        {
           payload: user(login: "mattgoespro") {
             repositories(first: 20, ownerAffiliations: OWNER, privacy: PUBLIC) {
               all: nodes {
@@ -93,10 +93,10 @@ export class ApiHttpClient {
     );
   }
 
-  public async getRepository(repoName: string): Promise<RepositoryDetails> {
+  public async getRepository(repoName: string): Promise<Repository> {
     const resp = await this.gqlClient.request<GitHubRepositoryDetails>(
       gql`
-        query GitHubRepositoryPortfolio {
+        {
           payload: user(login: "mattgoespro") {
             repository(name: "${repoName}") {
               portfolioSpec: object(expression: "main:portfolio.json") {
@@ -121,22 +121,28 @@ export class ApiHttpClient {
     );
 
     const repository = resp.payload.repository;
-
+    const projectSpec: ProjectSpecification = JSON.parse(repository.portfolioSpec.spec);
     return {
       name: repository.name,
-      createdTimestamp: repository.createdAt,
-      updatedTimestamp: repository.updatedAt,
-      portfolioSpec: JSON.parse(repository.portfolioSpec.spec),
-      readmeDoc: Buffer.from(repository.readmeDoc.content).toString("base64"),
+      stats: {
+        createdTimestamp: repository.createdAt,
+        updatedTimestamp: repository.updatedAt,
+        totalCommits: 0,
+      },
+      projectSpec,
+      readme: {
+        content: Buffer.from(repository.readmeDoc.content).toString("base64"),
+        encoding: "base64",
+      },
     };
   }
 
-  private calcLanguagePercentage(languages: RepositoryLanguages) {
+  private calcLanguagePercentage(languages: ProgrammingLanguages) {
     const totalBytes = Object.values(languages).reduce((val, s) => val + s, 0);
     const rawPercentages = Object.values(languages).map((numBytes) => (numBytes / totalBytes) * 100);
     const roundedPercentages = cascadeRounding(rawPercentages);
 
-    const languagePercentages: RepositoryLanguages = {};
+    const languagePercentages: ProgrammingLanguages = {};
     let index = 0;
 
     for (const lang in languages) {
@@ -152,7 +158,7 @@ export class ApiHttpClient {
     return languagePercentages;
   }
 
-  public async getLanguages(repoName: string): Promise<RepositoryLanguages> {
+  public async getLanguages(repoName: string): Promise<ProgrammingLanguages> {
     const resp = await this.httpClient.get<GitHubLanguageComposition>(`/repos/mattgoespro/${repoName}/languages`);
     return this.calcLanguagePercentage(resp.data);
   }

@@ -4,6 +4,7 @@
     "dbaeumer.vscode-eslint",
     "ms-azuretools.vscode-docker",
     "christian-kohler.npm-intellisense",
-    "rangav.vscode-thunder-client"
+    "rangav.vscode-thunder-client",
+    "GraphQL.vscode-graphql"
   ]
 }

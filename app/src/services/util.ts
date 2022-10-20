@@ -62,18 +62,30 @@ export function respondWithHttpErrorStatus(respond: Response, error: AxiosError 
     return;
   } else if (error instanceof ClientError) {
     if (error.response) {
-      const errorResponse = error.response as GraphQLResponse & GitHubGraphqlErrorResponse;
-      const responseErrors = errorResponse.errors;
-      const err = responseErrors[0];
+      const gqlErrors = (error.response as GraphQLResponse & GitHubGraphqlErrorResponse).errors;
 
-      try {
-        respond.sendStatus(getHttpStatusCodeByType(err.type));
-      } catch (err) {
-        // HTTP error type is unrecognized by the API.
+      let httpError = false;
+
+      for (const err of gqlErrors) {
+        if (err.type != null) {
+          httpError = true;
+        }
+      }
+
+      if (httpError) {
+        try {
+          respond.sendStatus(getHttpStatusCodeByType(gqlErrors[0].type));
+        } catch (err) {
+          // HTTP error type is unrecognized by the API.
+          console.log(err);
+          respond.sendStatus(500);
+        }
+      } else {
+        // GraphQL query is invalid.
+        console.log("[FATAL] GraphQL query is invalid.");
         respond.sendStatus(500);
       }
     } else if (error.request) {
-      // The GQL query string is malformed.
       respond.sendStatus(500);
     }
 
@@ -81,6 +93,5 @@ export function respondWithHttpErrorStatus(respond: Response, error: AxiosError 
   }
 
   // An unknown error has occurred somewhere.
-  // TODO: Log
   respond.sendStatus(500);
 }

@@ -47,11 +47,16 @@ export interface GitHubGraphqlErrorResponse {
 }
 
 export interface GitHubGraphqlError {
-  type: string;
-  path: string[];
-  locations: {
+  message: string;
+  type?: string;
+  path?: string[];
+  extensions?: {
+    code: string;
+    typeName: string;
+    fieldName: string;
+  };
+  locations?: {
     line: number;
     column: number;
   }[];
-  message: string;
 }

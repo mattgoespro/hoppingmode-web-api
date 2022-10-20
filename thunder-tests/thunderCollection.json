@@ -12,5 +12,19 @@
         "baseUrl": "http://localhost:3000"
       }
     }
+  },
+  {
+    "_id": "b55884e2-a636-449d-9353-6aa8f6de764e",
+    "colName": "GitHub API",
+    "created": "2022-10-20T21:54:27.715Z",
+    "sortNum": 20000,
+    "folders": [],
+    "settings": {
+      "headers": [],
+      "tests": [],
+      "options": {
+        "baseUrl": "https://api.github.com"
+      }
+    }
   }
 ]
