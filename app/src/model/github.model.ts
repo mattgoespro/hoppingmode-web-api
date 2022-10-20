@@ -46,10 +46,8 @@ export interface GitHubGraphqlErrorResponse {
   errors: GitHubGraphqlError[];
 }
 
-type GraphqlErrorType = "NOT_FOUND";
-
 export interface GitHubGraphqlError {
-  type: GraphqlErrorType;
+  type: string;
   path: string[];
   locations: {
     line: number;
