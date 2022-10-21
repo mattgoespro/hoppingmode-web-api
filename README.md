@@ -1,16 +1,16 @@
-# **hoppingmode-web-api** - A Personalized GitHub API Gateway Service
+# Code Portfolio: **hoppingmode-web-api**
 
-## Description
+## Overview
 
-**hoppingmode-web-api** is an Express REST API gateway microservice to GitHub's public API. It is an integral project forms part of the **hoppingmode-web** Docker stack.
-
-The API provides simplified REST endpoints to suit Hoppingmode Frontend's needs. It also obfuscates the GitHub HTTP request authorization required by GitHub, and increases the request daily limit.
+The **hoppingmode-web-api** project is a Docker microservice that runs alongside **hoppingmode-web-frontend**, my Code Portfolio website.
 
 ## Features
 
-The following endpoints are provided:
+### Proxy Server
 
-- **GET** &nbsp;&nbsp;&nbsp;<code>_/repos_</code>
-  - Returns a list of repositories and their details.
-- **GET** &nbsp;&nbsp;&nbsp; <code>_/repos/:repoName/languages_</code>
-  - Returns a map of programming languages recognized by GitHub as well as their percentage contribution to the project.
+The backend provides several functions as a proxy to GitHub's API:
+
+1. The endpoints exposed to the frontend are simpler and more intuitive.
+2. The burden of requesting (from GitHub directly), receiving, and collating response data to work with is taken from the frontend.
+3. It provides better, more predictable error handling.
+4. The frontend need not concern itself with API authorization and secret-keeping - that is all managed by the backend.
