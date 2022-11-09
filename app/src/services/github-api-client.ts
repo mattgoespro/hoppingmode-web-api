@@ -1,29 +1,28 @@
 import { ProgrammingLanguages, ProjectSpecification, Repository, RepositorySummary } from "@mattgoespro/hoppingmode-web";
-import axios, { AxiosStatic } from "axios";
+import axios, { AxiosInstance } from "axios";
 import { gql, GraphQLClient } from "graphql-request";
-import { GitHubApiConnectionInfo } from "../model/app.model";
 import { GitHubLanguageComposition, GitHubRepository, GitHubRepositoryDetails, GitHubRepositoryList } from "../model/github.model";
-import { cascadeRounding } from "./util";
+import { cascadeRounding } from "../util";
 
-const HttpClient = (connectionInfo: GitHubApiConnectionInfo) => {
-  axios.defaults.headers.common["Authorization"] = `token ${connectionInfo.authToken}`;
-  axios.defaults.baseURL = connectionInfo.restServerUrl;
-  axios.defaults.timeout = 2000;
-  return axios;
-};
+export class GitHubApiClient {
+  private gql: GraphQLClient;
+  private http: AxiosInstance;
 
-export class ApiHttpClient {
-  private gqlClient: GraphQLClient;
-  private httpClient: AxiosStatic;
+  constructor() {
+    const githubAuthToken = process.env.GITHUB_AUTH_TOKEN;
 
-  constructor(connectionInfo: GitHubApiConnectionInfo) {
-    this.gqlClient = new GraphQLClient(connectionInfo.gqlServerUrl, {
+    this.gql = new GraphQLClient(process.env.GITHUB_API_GQL, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `bearer ${connectionInfo.authToken}`,
+        Authorization: `bearer ${githubAuthToken}`,
       },
     });
-    this.httpClient = HttpClient(connectionInfo);
+
+    this.http = axios.create({
+      baseURL: process.env.GITHUB_API,
+      headers: { Authorization: `token ${process.env.GITHUB_API_AUTH_TOKEN}` },
+      timeout: 2000,
+    });
   }
 
   public async getRepositorySummaries(): Promise<RepositorySummary[]> {
@@ -59,7 +58,7 @@ export class ApiHttpClient {
       }
     `;
 
-    return this.gqlClient.request<GitHubRepositoryList>(
+    return this.gql.request<GitHubRepositoryList>(
       gql`
         {
           payload: user(login: "mattgoespro") {
@@ -94,7 +93,7 @@ export class ApiHttpClient {
   }
 
   public async getRepository(repoName: string): Promise<Repository> {
-    const resp = await this.gqlClient.request<GitHubRepositoryDetails>(
+    const resp = await this.gql.request<GitHubRepositoryDetails>(
       gql`
         {
           payload: user(login: "mattgoespro") {
@@ -170,7 +169,7 @@ export class ApiHttpClient {
   }
 
   public async getLanguages(repoName: string): Promise<ProgrammingLanguages> {
-    const resp = await this.httpClient.get<GitHubLanguageComposition>(`/repos/mattgoespro/${repoName}/languages`);
+    const resp = await this.http.get<GitHubLanguageComposition>(`/repos/mattgoespro/${repoName}/languages`);
     return this.calcLanguagePercentage(resp.data);
   }
 }

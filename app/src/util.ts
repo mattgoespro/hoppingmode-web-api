@@ -3,7 +3,7 @@ import { Response } from "express";
 import { ClientError } from "graphql-request";
 import { GraphQLResponse } from "graphql-request/dist/types";
 import { StatusCodes } from "http-status-codes";
-import { GitHubGraphqlErrorResponse } from "../model/github.model";
+import { GitHubGraphqlErrorResponse } from "./model/github.model";
 
 /*
  *  Given an array of floats that sum to an integer, this rounds the floats
