@@ -54,5 +54,19 @@
     "headers": [],
     "params": [],
     "tests": []
+  },
+  {
+    "_id": "6628de3f-016c-4002-9915-e6817cdf0b26",
+    "colId": "89fef53b-419b-4e8b-ad88-ad9499b44e42",
+    "containerId": "",
+    "name": "Programming Languages",
+    "url": "/repos/{{repository}}/languages",
+    "method": "GET",
+    "sortNum": 30000,
+    "created": "2022-11-09T18:54:10.186Z",
+    "modified": "2022-11-09T18:54:32.919Z",
+    "headers": [],
+    "params": [],
+    "tests": []
   }
 ]

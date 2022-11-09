@@ -1,6 +1,6 @@
 import { GitHubApiClient } from "../services/github-api-client";
 import { Request, Response } from "express";
-import { respondWithHttpErrorStatus } from "../util";
+import { respondWithErrorStatus } from "../util";
 
 const githubHttpClient = new GitHubApiClient();
 
@@ -10,7 +10,7 @@ const githubHttpClient = new GitHubApiClient();
 const paths = {
   list: "/repos",
   get: "/repos/:repoName",
-  getProgrammingLanguages: "/:repoName/languages",
+  getProgrammingLanguages: "/repos/:repoName/languages",
 };
 
 /**
@@ -29,7 +29,7 @@ async function list(_request: Request, response: Response) {
       console.log(resp);
       response.status(200).json(resp);
     })
-    .catch((err) => respondWithHttpErrorStatus(response, err));
+    .catch((err) => respondWithErrorStatus(response, err));
 }
 
 /**
@@ -41,7 +41,7 @@ async function get(request: Request, response: Response) {
     .then((resp) => {
       response.status(200).json(resp);
     })
-    .catch((err) => respondWithHttpErrorStatus(response, err));
+    .catch((err) => respondWithErrorStatus(response, err));
 }
 
 /**
@@ -51,7 +51,7 @@ async function getProgrammingLanguages(request: Request, response: Response) {
   githubHttpClient
     .getLanguages(request.params.repoName)
     .then((resp) => response.status(200).json(resp))
-    .catch((err) => respondWithHttpErrorStatus(response, err));
+    .catch((err) => respondWithErrorStatus(response, err));
 }
 
 export default {

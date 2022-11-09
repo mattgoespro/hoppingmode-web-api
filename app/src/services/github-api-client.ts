@@ -25,7 +25,7 @@ export class GitHubApiClient {
 
     this.http = axios.create({
       baseURL: process.env.GITHUB_API,
-      headers: { Authorization: `token ${process.env.GITHUB_API_AUTH_TOKEN}` },
+      headers: { Authorization: `token ${githubAuthToken}` },
       timeout: 2000,
     });
   }

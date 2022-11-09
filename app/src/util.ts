@@ -45,7 +45,7 @@ function getHttpStatusCodeByType(type: string) {
   }
 }
 
-export function respondWithHttpErrorStatus(respond: Response, error: AxiosError | ClientError | Error) {
+export function respondWithErrorStatus(respond: Response, error: AxiosError | ClientError | Error) {
   if ("isAxiosError" in error) {
     if (error.response) {
       /**
