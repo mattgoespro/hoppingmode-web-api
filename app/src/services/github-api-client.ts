@@ -1,7 +1,12 @@
 import { ProgrammingLanguages, ProjectSpecification, Repository, RepositorySummary } from "@mattgoespro/hoppingmode-web";
 import axios, { AxiosInstance } from "axios";
 import { gql, GraphQLClient } from "graphql-request";
-import { GitHubLanguageComposition, GitHubRepository, GitHubRepositoryDetails, GitHubRepositoryList } from "../model/github.model";
+import {
+  GitHubLanguageCompositionApiResponse,
+  GitHubRepositoryApiResponse,
+  GitHubRepositoryDetailsApiResponse,
+  GitHubRepositoryListApiResponse,
+} from "../models/github-response";
 import { cascadeRounding } from "../util";
 
 export class GitHubApiClient {
@@ -26,8 +31,8 @@ export class GitHubApiClient {
   }
 
   public async getRepositorySummaries(): Promise<RepositorySummary[]> {
-    const isPortfolioRepo = (repo: GitHubRepository) => repo.repo_topics.topics.findIndex((t) => t.topic.name === "portfolio") !== -1;
-    const mapToRepoSummary = (repo: GitHubRepository, pinned: boolean): RepositorySummary => ({
+    const isPortfolioRepo = (repo: GitHubRepositoryApiResponse) => repo.repo_topics.topics.findIndex((t) => t.topic.name === "portfolio") !== -1;
+    const mapToRepoSummary = (repo: GitHubRepositoryApiResponse, pinned: boolean): RepositorySummary => ({
       name: repo.name,
       description: repo.description,
       pinned,
@@ -45,7 +50,7 @@ export class GitHubApiClient {
     return pinnedRepos.concat(unpinnedRepos);
   }
 
-  private async queryGitHubRepositories(): Promise<GitHubRepositoryList> {
+  private async queryGitHubRepositories(): Promise<GitHubRepositoryListApiResponse> {
     const topicsQuery = gql`
       repo_topics: repositoryTopics(first: 1) {
         topics: nodes {
@@ -58,7 +63,7 @@ export class GitHubApiClient {
       }
     `;
 
-    return this.gql.request<GitHubRepositoryList>(
+    return this.gql.request<GitHubRepositoryListApiResponse>(
       gql`
         {
           payload: user(login: "mattgoespro") {
@@ -93,7 +98,7 @@ export class GitHubApiClient {
   }
 
   public async getRepository(repoName: string): Promise<Repository> {
-    const resp = await this.gql.request<GitHubRepositoryDetails>(
+    const resp = await this.gql.request<GitHubRepositoryDetailsApiResponse>(
       gql`
         {
           payload: user(login: "mattgoespro") {
@@ -169,7 +174,7 @@ export class GitHubApiClient {
   }
 
   public async getLanguages(repoName: string): Promise<ProgrammingLanguages> {
-    const resp = await this.http.get<GitHubLanguageComposition>(`/repos/mattgoespro/${repoName}/languages`);
+    const resp = await this.http.get<GitHubLanguageCompositionApiResponse>(`/repos/mattgoespro/${repoName}/languages`);
     return this.calcLanguagePercentage(resp.data);
   }
 }

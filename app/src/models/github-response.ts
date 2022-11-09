@@ -1,4 +1,4 @@
-export interface GitHubRepository {
+export interface GitHubRepositoryApiResponse {
   name: string;
   description: string;
   url: string;
@@ -13,18 +13,18 @@ export interface GitHubRepository {
   };
 }
 
-export interface GitHubRepositoryList {
+export interface GitHubRepositoryListApiResponse {
   payload: {
     repositories: {
-      all: GitHubRepository[];
+      all: GitHubRepositoryApiResponse[];
     };
     pinnedRepositories: {
-      pinned: GitHubRepository[];
+      pinned: GitHubRepositoryApiResponse[];
     };
   };
 }
 
-export interface GitHubRepositoryDetails {
+export interface GitHubRepositoryDetailsApiResponse {
   payload: {
     repository: {
       projectSpec: {
@@ -45,7 +45,7 @@ export interface GitHubRepositoryDetails {
   };
 }
 
-export type GitHubLanguageComposition = { [key: string]: number };
+export type GitHubLanguageCompositionApiResponse = { [key: string]: number };
 
 export interface GitHubGraphqlErrorResponse {
   errors: GitHubGraphqlError[];
