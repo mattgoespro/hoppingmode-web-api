@@ -1,4 +1,4 @@
-# Code Portfolio: **hoppingmode-web-api**
+# hoppingmode-web-api
 
 ## Overview
 
