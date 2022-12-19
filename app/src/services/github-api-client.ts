@@ -132,7 +132,12 @@ export class GitHubApiClient {
     );
 
     const repository = resp.payload.repository;
-    const spec: ProjectSpecification = JSON.parse(repository.projectSpec.spec);
+    const specRaw = repository.projectSpec;
+    let projectSpec: ProjectSpecification;
+
+    if (specRaw != null) {
+      projectSpec = JSON.parse(specRaw.spec);
+    }
 
     return {
       name: repository.name,
@@ -141,10 +146,7 @@ export class GitHubApiClient {
         updatedTimestamp: repository.updatedAt,
         totalCommits: repository.commit.history.totalCount,
       },
-      projectSpec: {
-        title: spec.title,
-        technicalSkills: spec.technicalSkills,
-      },
+      projectSpec,
       readme: {
         content: Buffer.from(repository.readme.content).toString("base64"),
         encoding: "base64",

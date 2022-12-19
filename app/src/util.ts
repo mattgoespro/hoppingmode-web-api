@@ -69,6 +69,7 @@ export function respondWithErrorStatus(respond: Response, error: AxiosError | Cl
       for (const err of gqlErrors) {
         if (err.type != null) {
           httpError = true;
+          break;
         }
       }
 
@@ -77,6 +78,7 @@ export function respondWithErrorStatus(respond: Response, error: AxiosError | Cl
           respond.sendStatus(getHttpStatusCodeByType(gqlErrors[0].type));
         } catch (err) {
           // HTTP error type is unrecognized by the API.
+          console.log("[FATAL] Unrecognized HTTP status type.");
           console.log(err);
           respond.sendStatus(500);
         }
@@ -86,12 +88,15 @@ export function respondWithErrorStatus(respond: Response, error: AxiosError | Cl
         respond.sendStatus(500);
       }
     } else if (error.request) {
+      console.log("ERRRRR");
+      console.log(error.request);
       respond.sendStatus(500);
     }
 
     return;
   }
 
+  console.log(error);
   // An unknown error has occurred somewhere.
   respond.sendStatus(500);
 }

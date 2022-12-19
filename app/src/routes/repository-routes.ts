@@ -26,7 +26,6 @@ async function list(_request: Request, response: Response) {
   githubHttpClient
     .getRepositorySummaries()
     .then((resp) => {
-      console.log(resp);
       response.status(200).json(resp);
     })
     .catch((err) => respondWithErrorStatus(response, err));
