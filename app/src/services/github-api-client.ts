@@ -98,6 +98,8 @@ export class GitHubApiClient {
   }
 
   public async getRepository(repoName: string): Promise<Repository> {
+    // TODO: What if 'main' is not the primary branch (maybe 'master' is)?
+
     const resp = await this.gql.request<GitHubRepositoryDetailsApiResponse>(
       gql`
         {
