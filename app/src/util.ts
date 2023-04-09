@@ -1,7 +1,7 @@
 import { AxiosError } from "axios";
 import { Response } from "express";
 import { ClientError } from "graphql-request";
-import { GraphQLResponse } from "graphql-request/dist/types";
+import { GraphQLResponse } from "graphql-request/build/esm/types";
 import { StatusCodes } from "http-status-codes";
 import { GitHubGraphqlErrorResponse } from "./models/github-response";
 
