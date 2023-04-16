@@ -6,7 +6,7 @@ server.listen(3000, () =>
   console.log(
     generateBanner.textSync("Server    started   ...", {
       font: "Standard",
-      whitespaceBreak: true,
+      whitespaceBreak: true
     })
   )
 );

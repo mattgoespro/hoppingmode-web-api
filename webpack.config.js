@@ -7,18 +7,28 @@ module.exports = {
   target: "node",
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "index.js",
+    filename: "index.js"
   },
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: [".ts", ".js"]
   },
   module: {
     rules: [
+      // {
+      //   test: /\.ts$/,
+      //   use: ["ts-loader"]
+      // }
       {
         test: /\.ts$/,
-        use: ["ts-loader"],
-      },
-    ],
+        use: {
+          loader: "babel-loader",
+          options: {
+            cacheDirectory: true,
+            cacheCompression: false
+          }
+        }
+      }
+    ]
   },
-  externals: [nodeExternals()],
+  externals: [nodeExternals()]
 };

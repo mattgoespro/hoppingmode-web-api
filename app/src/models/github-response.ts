@@ -7,20 +7,20 @@ export interface GitHubRepositoryApiResponse {
   repo_topics: {
     topics: {
       topic: {
-        name: string;
-      };
-    }[];
+        name: string
+      }
+    }[]
   };
 }
 
 export interface GitHubRepositoryListApiResponse {
   payload: {
     repositories: {
-      all: GitHubRepositoryApiResponse[];
-    };
+      all: GitHubRepositoryApiResponse[]
+    },
     pinnedRepositories: {
-      pinned: GitHubRepositoryApiResponse[];
-    };
+      pinned: GitHubRepositoryApiResponse[]
+    }
   };
 }
 
@@ -28,20 +28,20 @@ export interface GitHubRepositoryDetailsApiResponse {
   payload: {
     repository: {
       projectSpec: {
-        spec: string;
-      };
+        spec: string
+      },
       readme: {
-        content: string;
-      };
+        content: string
+      },
       commit: {
         history: {
-          totalCount: number;
-        };
-      };
-      name: string;
-      createdAt: string;
-      updatedAt: string;
-    };
+          totalCount: number
+        }
+      },
+      name: string,
+      createdAt: string,
+      updatedAt: string
+    }
   };
 }
 
@@ -56,12 +56,12 @@ export interface GitHubGraphqlError {
   type?: string;
   path?: string[];
   extensions?: {
-    code: string;
-    typeName: string;
-    fieldName: string;
+    code: string,
+    typeName: string,
+    fieldName: string
   };
   locations?: {
-    line: number;
-    column: number;
+    line: number,
+    column: number
   }[];
 }

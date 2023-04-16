@@ -5,5 +5,5 @@ export default rateLimit({
   max: 10000,
   message: "Request limited exceeded.",
   standardHeaders: true,
-  legacyHeaders: false,
+  legacyHeaders: false
 });

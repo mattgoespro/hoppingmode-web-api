@@ -1,10 +1,29 @@
 {
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "files.watcherExclude": {
+    "node_modules": true,
+    "dist": true
+  },
+  "search.exclude": {
+    "node_modules": true,
+    "dist": true,
+    "package-lock.json": true
+  },
   "files.exclude": {
     "node_modules": true
   },
-  "files.watcherExclude": {
-    "node_modules": true
+  "eslint.validate": ["javascript", "typescript"],
+  "eslint.probe": ["javascript", "typescript"],
+  "eslint.lintTask.enable": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "javascript.suggestionActions.enabled": false,
+  "[dockerfile]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.quickSuggestions": {
+      "strings": true
+    }
   },
-  "thunder-client.showActivityFromCollection": false,
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "typescript.updateImportsOnFileMove.enabled": "always",
   "thunder-client.saveToWorkspace": true
 }

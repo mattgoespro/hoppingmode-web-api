@@ -1,11 +1,16 @@
-import { ProgrammingLanguages, ProjectSpecification, Repository, RepositorySummary } from "@mattgoespro/hoppingmode-web";
+import {
+  ProgrammingLanguages,
+  ProjectSpecification,
+  Repository,
+  RepositorySummary
+} from "@mattgoespro/hoppingmode-web";
 import axios, { AxiosInstance } from "axios";
 import { gql, GraphQLClient } from "graphql-request";
 import {
   GitHubLanguageCompositionApiResponse,
   GitHubRepositoryApiResponse,
   GitHubRepositoryDetailsApiResponse,
-  GitHubRepositoryListApiResponse,
+  GitHubRepositoryListApiResponse
 } from "../models/github-response";
 import { cascadeRounding } from "../util";
 
@@ -21,24 +26,28 @@ export class GitHubApiClient {
     this.gql = new GraphQLClient(this.githubGqlApi, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `bearer ${githubAuthToken}`,
-      },
+        Authorization: `bearer ${githubAuthToken}`
+      }
     });
 
     this.http = axios.create({
       baseURL: this.githubApi,
       headers: { Authorization: `token ${githubAuthToken}` },
-      timeout: 2000,
+      timeout: 2000
     });
   }
 
   public async getRepositorySummaries(): Promise<RepositorySummary[]> {
-    const isPortfolioRepo = (repo: GitHubRepositoryApiResponse) => repo.repo_topics.topics.findIndex((t) => t.topic.name === "portfolio") !== -1;
-    const mapToRepoSummary = (repo: GitHubRepositoryApiResponse, pinned: boolean): RepositorySummary => ({
+    const isPortfolioRepo = (repo: GitHubRepositoryApiResponse) =>
+      repo.repo_topics.topics.findIndex((t) => t.topic.name === "portfolio") !== -1;
+    const mapToRepoSummary = (
+      repo: GitHubRepositoryApiResponse,
+      pinned: boolean
+    ): RepositorySummary => ({
       name: repo.name,
       description: repo.description,
       pinned,
-      githubUrl: repo.url,
+      githubUrl: repo.url
     });
     const githubRepos = await this.queryGitHubRepositories();
     const pinnedRepos = githubRepos.payload.pinnedRepositories.pinned
@@ -148,19 +157,21 @@ export class GitHubApiClient {
       stats: {
         createdTimestamp: repository.createdAt,
         updatedTimestamp: repository.updatedAt,
-        totalCommits: repository.commit.history.totalCount,
+        totalCommits: repository.commit.history.totalCount
       },
       projectSpec,
       readme: {
         content: Buffer.from(repository.readme.content).toString("base64"),
-        encoding: "base64",
-      },
+        encoding: "base64"
+      }
     };
   }
 
   private calcLanguagePercentage(languages: ProgrammingLanguages) {
     const totalBytes = Object.values(languages).reduce((val, s) => val + s, 0);
-    const rawPercentages = Object.values(languages).map((numBytes) => (numBytes / totalBytes) * 100);
+    const rawPercentages = Object.values(languages).map(
+      (numBytes) => (numBytes / totalBytes) * 100
+    );
     const roundedPercentages = cascadeRounding(rawPercentages);
 
     const languagePercentages: ProgrammingLanguages = {};
@@ -180,7 +191,9 @@ export class GitHubApiClient {
   }
 
   public async getLanguages(repoName: string): Promise<ProgrammingLanguages> {
-    const resp = await this.http.get<GitHubLanguageCompositionApiResponse>(`/repos/mattgoespro/${repoName}/languages`);
+    const resp = await this.http.get<GitHubLanguageCompositionApiResponse>(
+      `/repos/mattgoespro/${repoName}/languages`
+    );
     return this.calcLanguagePercentage(resp.data);
   }
 }

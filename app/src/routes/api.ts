@@ -10,6 +10,9 @@ apiRouter.get(repositoryRoutes.paths.list, repositoryRoutes.list);
 apiRouter.get(repositoryRoutes.paths.get, repositoryRoutes.get);
 
 // Get repository programming languages
-apiRouter.get(repositoryRoutes.paths.getProgrammingLanguages, repositoryRoutes.getProgrammingLanguages);
+apiRouter.get(
+  repositoryRoutes.paths.getProgrammingLanguages,
+  repositoryRoutes.getProgrammingLanguages
+);
 
 export default apiRouter;

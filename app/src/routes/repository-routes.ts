@@ -10,7 +10,7 @@ const githubHttpClient = new GitHubApiClient();
 const paths = {
   list: "/repos",
   get: "/repos/:repoName",
-  getProgrammingLanguages: "/repos/:repoName/languages",
+  getProgrammingLanguages: "/repos/:repoName/languages"
 };
 
 /**
@@ -57,5 +57,5 @@ export default {
   paths,
   list,
   get,
-  getProgrammingLanguages,
+  getProgrammingLanguages
 };
