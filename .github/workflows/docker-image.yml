@@ -25,15 +25,13 @@ jobs:
         uses: docker/setup-buildx-action@v2
       - name: Write SSL key file
         env:
-          NGINX_SSL_PRIVATE_KEY: ${{ secrets.NGINX_SSL_PRIVATE_KEY }}
-          NGINX_SSL_CERT: ${{ secrets.NGINX_SSL_CERT }}
+          PROXY_GITHUB_AUTH_TOKEN: ${{ secrets.PROXY_GITHUB_AUTH_TOKEN }}
         run: |
-          echo "${NGINX_SSL_PRIVATE_KEY}" | base64 --decode > /home/runner/work/${{ env.REPOSITORY_NAME }}/${{ env.REPOSITORY_NAME }}/nginx/ssl/hoppingmode.com.key &&
-          echo "${NGINX_SSL_CERT}" | base64 --decode > /home/runner/work/${{ env.REPOSITORY_NAME }}/${{ env.REPOSITORY_NAME }}/nginx/ssl/hoppingmode.com.crt
+          export PROXY_GITHUB_AUTH_TOKEN=$(cat data.b64) && echo "${PROXY_GITHUB_AUTH_TOKEN}" | base64 --decode | echo "PROXY_GITHUB_AUTH_TOKEN=\"$(tee)\"" > /home/runner/work/${{ env.REPOSITORY_NAME }}/${{ env.REPOSITORY_NAME }}/.env
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/hoppingmode-web:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/hoppingmode-web-api:latest

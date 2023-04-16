@@ -10,13 +10,15 @@ import {
 import { cascadeRounding } from "../util";
 
 export class GitHubApiClient {
+  private githubGqlApi = "https://api.github.com/graphql";
+  private githubApi = "https://api.github.com";
   private gql: GraphQLClient;
   private http: AxiosInstance;
 
   constructor() {
-    const githubAuthToken = process.env.GITHUB_AUTH_TOKEN;
+    const githubAuthToken = process.env.PROXY_GITHUB_AUTH_TOKEN;
 
-    this.gql = new GraphQLClient(process.env.GITHUB_API_GQL, {
+    this.gql = new GraphQLClient(this.githubGqlApi, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `bearer ${githubAuthToken}`,
@@ -24,7 +26,7 @@ export class GitHubApiClient {
     });
 
     this.http = axios.create({
-      baseURL: process.env.GITHUB_API,
+      baseURL: this.githubApi,
       headers: { Authorization: `token ${githubAuthToken}` },
       timeout: 2000,
     });
