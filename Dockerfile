@@ -6,8 +6,7 @@ COPY package*.json ./
 RUN npm ci
 
 COPY .env .
-COPY ./dist .
 
-CMD [ "node" , "index.js" ]
+CMD [ "node" , "dist/index.js" ]
 
 EXPOSE 8080
