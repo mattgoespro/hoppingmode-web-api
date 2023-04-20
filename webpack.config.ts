@@ -1,18 +1,16 @@
-import path from "path";
+import { resolve } from "path";
 import nodeExternals from "webpack-node-externals";
-import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
 
 const config = {
   entry: "./app/index.ts",
   mode: "production",
   target: "node",
   output: {
-    path: path.resolve(__dirname, "dist"),
+    path: resolve(__dirname, "dist"),
     filename: "index.js"
   },
   resolve: {
-    extensions: [".ts"],
-    plugins: [new TsconfigPathsPlugin()]
+    extensions: [".ts"]
   },
   module: {
     rules: [
