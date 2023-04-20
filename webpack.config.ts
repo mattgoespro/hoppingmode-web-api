@@ -1,21 +1,24 @@
-import { resolve } from "path";
+import path from "path";
 import nodeExternals from "webpack-node-externals";
+import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
 
-module.exports = {
+const config = {
   entry: "./app/index.ts",
   mode: "production",
   target: "node",
   output: {
-    path: resolve(__dirname, "dist"),
+    path: path.resolve(__dirname, "dist"),
     filename: "index.js"
   },
   resolve: {
-    extensions: [".ts", ".js"]
+    extensions: [".ts"],
+    plugins: [new TsconfigPathsPlugin()]
   },
   module: {
     rules: [
       {
         test: /\.ts$/,
+        exclude: /node_modules/,
         use: {
           loader: "babel-loader",
           options: {
@@ -28,3 +31,5 @@ module.exports = {
   },
   externals: [nodeExternals()]
 };
+
+export default config;
