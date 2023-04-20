@@ -1,6 +1,7 @@
 module.exports = {
   env: {
-    es2021: true
+    amd: true,
+    node: true
   },
   extends: [
     "eslint:recommended",
@@ -8,6 +9,7 @@ module.exports = {
     "plugin:prettier/recommended"
   ],
   parser: "@typescript-eslint/parser",
+  parserOptions: {},
   plugins: ["@typescript-eslint"],
   settings: {
     "import/resolver": {
@@ -19,7 +21,7 @@ module.exports = {
       "error",
       {
         singleQuote: false,
-        parser: "flow"
+        parser: "typescript"
       }
     ],
     "arrow-body-style": "off",
