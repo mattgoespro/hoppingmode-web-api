@@ -27,8 +27,8 @@ export interface GitHubRepositoryListApiResponse {
 export interface GitHubRepositoryDetailsApiResponse {
   payload: {
     repository: {
-      projectSpec: {
-        spec: string;
+      projectDetails: {
+        content: string;
       };
       readme: {
         content: string;

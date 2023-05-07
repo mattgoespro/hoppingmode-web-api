@@ -1,6 +1,6 @@
 import {
   ProgrammingLanguages,
-  ProjectSpecification,
+  ProjectDetails,
   Repository,
   RepositorySummary
 } from "@mattgoespro/hoppingmode-web";
@@ -116,9 +116,9 @@ export class GitHubApiClient {
         {
           payload: user(login: "mattgoespro") {
             repository(name: "${repoName}") {
-              projectSpec: object(expression: "main:portfolio.json") {
+              projectDetails: object(expression: "main:project-details.json") {
                 ... on Blob {
-                  spec: text
+                  content: text
                 }
               }
               readme: object(expression: "main:README.md") {
@@ -145,12 +145,6 @@ export class GitHubApiClient {
     );
 
     const repository = resp.payload.repository;
-    const specRaw = repository.projectSpec;
-    let projectSpec: ProjectSpecification;
-
-    if (specRaw != null) {
-      projectSpec = JSON.parse(specRaw.spec);
-    }
 
     return {
       name: repository.name,
@@ -159,7 +153,9 @@ export class GitHubApiClient {
         updatedTimestamp: repository.updatedAt,
         totalCommits: repository.commit.history.totalCount
       },
-      projectSpec,
+      projectDetails: repository.projectDetails?.content
+        ? JSON.parse(repository.projectDetails.content)
+        : null,
       readme: {
         content: Buffer.from(repository.readme.content).toString("base64"),
         encoding: "base64"
