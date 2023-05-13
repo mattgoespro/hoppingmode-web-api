@@ -27,7 +27,7 @@ jobs:
         env:
           PROXY_GITHUB_AUTH_TOKEN: ${{ secrets.PROXY_GITHUB_AUTH_TOKEN }}
         run: |
-          export PROXY_GITHUB_AUTH_TOKEN=$(cat data.b64) && echo "${PROXY_GITHUB_AUTH_TOKEN}" | base64 --decode | echo "PROXY_GITHUB_AUTH_TOKEN=\"$(tee)\"" > /home/runner/work/${{ env.REPOSITORY_NAME }}/${{ env.REPOSITORY_NAME }}/.env
+          export PROXY_GITHUB_AUTH_TOKEN=$(cat data.b64) && echo "${PROXY_GITHUB_AUTH_TOKEN}" | base64 --decode | echo 'PROXY_GITHUB_AUTH_TOKEN="$(tee)"' > /home/runner/work/${{ env.REPOSITORY_NAME }}/${{ env.REPOSITORY_NAME }}/.env
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
