@@ -5,11 +5,15 @@ module.exports = {
   },
   extends: [
     "eslint:recommended",
+    "prettier",
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended"
   ],
   parser: "@typescript-eslint/parser",
-  parserOptions: {},
+  parserOptions: {
+    ecmaVersion: "latest",
+    sourceType: "module"
+  },
   plugins: ["@typescript-eslint"],
   settings: {
     "import/resolver": {
@@ -25,6 +29,7 @@ module.exports = {
       }
     ],
     "arrow-body-style": "off",
-    "prefer-arrow-callback": "off"
+    "prefer-arrow-callback": "off",
+    "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }]
   }
 };

@@ -1,9 +1,9 @@
 import { AxiosError } from "axios";
-import { Response } from "express";
+import Express from "express";
 import { ClientError } from "graphql-request";
 import { GraphQLResponse } from "graphql-request/build/esm/types";
 import { StatusCodes } from "http-status-codes";
-import { GitHubGraphqlErrorResponse } from "./models/github-response";
+import { GitHubGraphqlErrorDTO } from "./services/github-api.dto";
 
 /*
  *  Given an array of floats that sum to an integer, this rounds the floats
@@ -11,7 +11,7 @@ import { GitHubGraphqlErrorResponse } from "./models/github-response";
  *
  *  Source: https://stackoverflow.com/a/792476/6265995
  */
-export function cascadeRounding(array: number[]): number[] {
+export function roundCascading(array: number[]): number[] {
   let fpTotal = 0;
   let intTotal = 0;
   const roundedArray: number[] = [];
@@ -45,7 +45,17 @@ function getHttpStatusCodeByType(type: string) {
   }
 }
 
-export function respondWithErrorStatus(respond: Response, error: AxiosError | ClientError | Error) {
+/**
+ * Handles different error types (Axios, Client or plain Error) and sends an error response.
+ *
+ * @param respond
+ * @param error
+ * @returns
+ */
+export function respondWithErrorStatus(
+  respond: Express.Response,
+  error: AxiosError | ClientError | Error
+) {
   if ("isAxiosError" in error) {
     if (error.response) {
       /**
@@ -61,42 +71,45 @@ export function respondWithErrorStatus(respond: Response, error: AxiosError | Cl
 
     return;
   } else if (error instanceof ClientError) {
-    if (error.response) {
-      const gqlErrors = (error.response as GraphQLResponse & GitHubGraphqlErrorResponse).errors;
+    // if (error.response) {
+    //   const gqlErrors = (error.response as GraphQLResponse & GitHubGraphqlErrorDTO[]).errors;
 
-      let httpError = false;
+    //   let httpError = false;
 
-      for (const err of gqlErrors) {
-        if (err.type != null) {
-          httpError = true;
-          break;
-        }
-      }
+    //   for (const err of gqlErrors) {
+    //     if (err.type != null) {
+    //       httpError = true;
+    //       break;
+    //     }
+    //   }
 
-      if (httpError) {
-        try {
-          respond.sendStatus(getHttpStatusCodeByType(gqlErrors[0].type));
-        } catch (err) {
-          // HTTP error type is unrecognized by the API.
-          console.log("[FATAL] Unrecognized HTTP status type.");
-          console.log(err);
-          respond.sendStatus(500);
-        }
-      } else {
-        // GraphQL query is invalid.
-        console.log("[FATAL] GraphQL query is invalid.");
-        respond.sendStatus(500);
-      }
-    } else if (error.request) {
-      console.log("ERRRRR");
-      console.log(error.request);
-      respond.sendStatus(500);
-    }
+    //   if (httpError) {
+    //     try {
+    //       respond.sendStatus(getHttpStatusCodeByType(gqlErrors[0].type));
+    //     } catch (err) {
+    //       // HTTP error type is unrecognized by the API.
+    //       console.log("[FATAL] Unrecognized HTTP status type.");
+    //       console.log(err);
+    //       respond.sendStatus(500);
+    //     }
+    //   } else {
+    //     // GraphQL query is invalid.
+    //     console.log("[FATAL] GraphQL query is invalid.");
+    //     respond.sendStatus(500);
+    //   }
+    // } else if (error.request) {
+    //   /**
+    //    * The request was never sent due to an unknown reason.
+    //    */
+    //   console.log(error.request);
+    //   respond.sendStatus(500);
+    // }
 
     return;
   }
 
   console.log(error);
+
   // An unknown error has occurred somewhere.
   respond.sendStatus(500);
 }

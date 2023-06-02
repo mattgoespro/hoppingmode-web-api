@@ -1,35 +1,34 @@
-export interface GitHubRepositoryApiResponse {
+import { Encoding } from "crypto";
+
+export interface GitHubRepositoryDTO {
   name: string;
   description: string;
   url: string;
   createdAt: string;
   updatedAt: string;
-  repo_topics: {
-    topics: {
-      topic: {
+  topics: {
+    list: {
+      topicItem: {
         name: string;
       };
     }[];
   };
 }
 
-export interface GitHubRepositoryListApiResponse {
+export interface ListGitHubRepositoriesDTO {
   payload: {
-    repositories: {
-      all: GitHubRepositoryApiResponse[];
+    pinned: {
+      list: GitHubRepositoryDTO[];
     };
-    pinnedRepositories: {
-      pinned: GitHubRepositoryApiResponse[];
+    all: {
+      list: GitHubRepositoryDTO[];
     };
   };
 }
 
-export interface GitHubRepositoryDetailsApiResponse {
+export interface GitHubRepositoryViewDTO {
   payload: {
     repository: {
-      projectDetails: {
-        content: string;
-      };
       readme: {
         content: string;
       };
@@ -45,13 +44,14 @@ export interface GitHubRepositoryDetailsApiResponse {
   };
 }
 
-export type GitHubLanguageCompositionApiResponse = { [key: string]: number };
+/**
+ * GitHub API response for a repository's languages.
+ *
+ * Returns a map of language names to the number of bytes of code written in that language.
+ */
+export type GitHubRepositoryCodeLanguageDTO = { [key: string]: number };
 
-export interface GitHubGraphqlErrorResponse {
-  errors: GitHubGraphqlError[];
-}
-
-export interface GitHubGraphqlError {
+export interface GitHubGraphqlErrorDTO {
   message: string;
   type?: string;
   path?: string[];

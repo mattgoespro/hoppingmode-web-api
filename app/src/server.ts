@@ -1,20 +1,19 @@
-import express from "express";
+import Express from "express";
 import requestRateLimiter from "./middleware/request-rate-limiter";
 import logger from "./middleware/response-logger";
 import cors from "./middleware/cors";
 import helmet from "helmet";
-import ApiRouter from "./routes/api";
+import ApiRouter from "./routes/api-router-configuration";
 
-const app = express();
+const app = Express();
 
-// Configure basic express settings
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Configure basic express middleware
+app.use(Express.json()).use(Express.urlencoded({ extended: true }));
 
-// Set up middleware
+// Set up custom middleware
 app.use(cors, requestRateLimiter, logger, helmet());
 
-// Add APIs
+// Add API router
 app.use(ApiRouter);
 
 export default app;

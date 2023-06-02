@@ -13,7 +13,7 @@
   },
   "author": "hoppingmode",
   "dependencies": {
-    "@mattgoespro/hoppingmode-web": "^1.5.0",
+    "@mattgoespro/hoppingmode-web-core": "^1.0.2",
     "aos": "^2.3.4",
     "axios": "^1.3.6",
     "cors": "^2.8.5",
