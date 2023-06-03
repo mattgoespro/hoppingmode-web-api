@@ -5,7 +5,7 @@ import {
   ProjectReadmeViewDTO
 } from "@mattgoespro/hoppingmode-web-core";
 import axios, { AxiosInstance } from "axios";
-import { gql, GraphQLClient } from "graphql-request";
+import { GraphQLClient } from "graphql-request";
 import {
   GitHubRepositoryCodeLanguageDTO,
   GitHubRepositoryDTO,

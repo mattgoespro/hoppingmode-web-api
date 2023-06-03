@@ -8,7 +8,7 @@
     "build": "webpack --mode production",
     "lint": "eslint app",
     "lint:fix": "prettier --write app/**/*.{js,ts} --config ./.prettierrc.js",
-    "docker:build": "docker build . -t hoppingmode-web/api",
+    "docker:build": "docker build . -t hoppingmode-web/api --build-arg NPM_AUTH_TOKEN=${NPM_AUTH_TOKEN}",
     "docker:start": "(docker rm -f api || true) && docker run -d -p 8080:3000 --name api hoppingmode-web/api"
   },
   "author": "hoppingmode",

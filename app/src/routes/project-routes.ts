@@ -1,5 +1,5 @@
 import { ParameterizedRequest } from "../models/parameterized-request";
-import { GitHubApiClient } from "../services/github-api-client.service";
+import { GitHubApiClient } from "../services/github-api.service";
 import { respondWithErrorStatus } from "../util";
 import Express from "express";
 

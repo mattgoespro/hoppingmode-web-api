@@ -29,6 +29,13 @@ jobs:
         run: |
           echo "$PROXY_GITHUB_AUTH_TOKEN" | base64 --decode | echo "PROXY_GITHUB_AUTH_TOKEN=$(tee)" >> /home/runner/work/${{ env.REPOSITORY_NAME }}/${{ env.REPOSITORY_NAME }}/.env
           echo $(cat /home/runner/work/${{ env.REPOSITORY_NAME }}/${{ env.REPOSITORY_NAME }}/.env)
+      - name: Set npm auth token
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+        run: |
+          echo "Home: $HOME"
+          export NPM_AUTH_TOKEN=$(echo "$NPM_AUTH_TOKEN" | base64 --decode | tee)
+          echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" >> /home/runner/work/${{ env.REPOSITORY_NAME }}/${{ env.REPOSITORY_NAME }}/.npmrc
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
