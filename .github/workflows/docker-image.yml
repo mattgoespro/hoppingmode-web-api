@@ -34,8 +34,9 @@ jobs:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
         run: |
           echo "Home: $HOME"
-          export NPM_AUTH_TOKEN=$(echo "$NPM_AUTH_TOKEN" | base64 --decode | tee)
-          echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" >> /home/runner/work/${{ env.REPOSITORY_NAME }}/${{ env.REPOSITORY_NAME }}/.npmrc
+          echo "Project working directory: $GITHUB_WORKSPACE"
+          echo "$NPM_AUTH_TOKEN" | base64 --decode | echo "//registry.npmjs.org/:_authToken=$(tee)" >> /home/runner/work/${{ env.REPOSITORY_NAME }}/${{ env.REPOSITORY_NAME }}/.npmrc
+          cat $GITHUB_WORKSPACE/.npmrc
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
