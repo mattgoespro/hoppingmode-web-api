@@ -1,5 +1,7 @@
 import { gql } from "graphql-request";
 
+export const GITHUB_LOGIN = "mattgoespro";
+
 const GITHUB_REPOSITORY_TOPICS_GQL = gql`
       topics: repositoryTopics(first: 10) {
         list: nodes {
@@ -14,10 +16,15 @@ const GITHUB_REPOSITORY_TOPICS_GQL = gql`
 
 export const GITHUB_LIST_REPOSITORIES_GQL = gql`
   {
-    payload: user(login: "mattgoespro") {
+    payload: user(login: "${GITHUB_LOGIN}") {
       pinned: pinnedItems(first: 6, types: REPOSITORY) {
         list: nodes {
           ... on Repository {
+            owner {
+              ... on User {
+                login
+              }
+            }
             name
             description
             url
@@ -46,12 +53,11 @@ export const GITHUB_LIST_REPOSITORIES_GQL = gql`
 export function createViewRepositoryGqlRequest(repoName: string) {
   return gql`
         {
-          payload: user(login: "mattgoespro") {
+          payload: user(login: "${GITHUB_LOGIN}") {
             repository(name: "${repoName}") {
               readme: object(expression: "main:README.md") {
                 ... on Blob {
                   content: text
-                  encoding: text
                 }
               }
               commit: object(expression: "main") {

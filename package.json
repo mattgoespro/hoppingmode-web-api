@@ -9,11 +9,12 @@
     "lint": "eslint app",
     "lint:fix": "prettier --write app/**/*.{js,ts} --config ./.prettierrc.js",
     "docker:build": "docker build . -t hoppingmode-web/api --build-arg NPM_AUTH_TOKEN=${NPM_AUTH_TOKEN}",
-    "docker:start": "(docker rm -f api || true) && docker run -d -p 8080:3000 --name api hoppingmode-web/api"
+    "docker:start": "(docker rm -f api || true) && docker run -d -p 8080:3000 --name api hoppingmode-web/api",
+    "docker:start-dockerhub": "npx mattgoespro hoppingmode-web run -i api --rm"
   },
   "author": "hoppingmode",
   "dependencies": {
-    "@mattgoespro/hoppingmode-web-core": "^1.0.2",
+    "@mattgoespro/hoppingmode-web-core": "^1.0.3",
     "aos": "^2.3.4",
     "axios": "^1.3.6",
     "cors": "^2.8.5",

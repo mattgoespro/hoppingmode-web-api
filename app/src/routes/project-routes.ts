@@ -1,5 +1,5 @@
 import { ParameterizedRequest } from "../models/parameterized-request";
-import { GitHubApiClient } from "../services/github-api.service";
+import { GitHubApiClient } from "../services/github.service";
 import { respondWithErrorStatus } from "../util";
 import Express from "express";
 
@@ -12,6 +12,7 @@ interface ApiRoutes {
 /**
  * Available API Paths
  */
+
 type ListProjectsRequest = "/projects";
 type GetProjectRequest = "/projects/:name";
 type GetProjectCodeLanguagesRequest = "/projects/:name/code-languages";

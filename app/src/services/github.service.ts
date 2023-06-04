@@ -13,10 +13,16 @@ import {
   ListGitHubRepositoriesDTO
 } from "./github-api.dto";
 import { roundCascading } from "../util";
-import { GITHUB_LIST_REPOSITORIES_GQL, createViewRepositoryGqlRequest } from "./github-api.model";
+import {
+  GITHUB_LIST_REPOSITORIES_GQL,
+  GITHUB_LOGIN,
+  createViewRepositoryGqlRequest
+} from "./github-api.model";
 import { Encoding } from "crypto";
 
 export class GitHubApiClient {
+  private PORTFOLIO_TAG = "portfolio-project";
+  private GITHUB_README_ENCODING: Encoding = "utf-8";
   private githubGqlApi = "https://api.github.com/graphql";
   private githubApi = "https://api.github.com";
   private gql: GraphQLClient;
@@ -41,8 +47,14 @@ export class GitHubApiClient {
     });
   }
 
-  private isPortfolioRepository(repo: GitHubRepositoryDTO) {
-    return repo.topics.list.findIndex((t) => t.topicItem.name === "portfolio-project") !== -1;
+  private ownsPortfolioProject(repo: GitHubRepositoryDTO) {
+    const login = repo.owner?.login;
+
+    if (login != null && login !== GITHUB_LOGIN) {
+      return false;
+    }
+
+    return repo.topics.list.findIndex((t) => t.topicItem.name === this.PORTFOLIO_TAG) !== -1;
   }
 
   private constructProjectListDTO(repo: GitHubRepositoryDTO, pinned: boolean): ProjectListDTO {
@@ -56,25 +68,26 @@ export class GitHubApiClient {
 
   public async constructProjectListDTOs(): Promise<ProjectListDTO[]> {
     try {
-      let githubRepositoryList = (
+      const githubRepositoryList = (
         await this.gql.request<ListGitHubRepositoriesDTO>(GITHUB_LIST_REPOSITORIES_GQL)
       ).payload;
 
-      const regularRepositories = (githubRepositoryList?.all?.list || [])
-        .filter(this.isPortfolioRepository)
+      const regularRepositories = githubRepositoryList.all.list
+        .filter(this.ownsPortfolioProject.bind(this))
         .filter(
           (repo) =>
             githubRepositoryList.pinned.list.findIndex((repo2) => repo2.name === repo.name) === -1
         )
         .map((repo) => this.constructProjectListDTO(repo, false));
 
-      let pinnedRepositories = (githubRepositoryList.pinned?.list || []).map((repo) =>
-        this.constructProjectListDTO(repo, true)
-      );
+      const pinnedRepositories = githubRepositoryList.pinned.list
+        .filter(this.ownsPortfolioProject.bind(this))
+        .map((repo) => this.constructProjectListDTO(repo, true));
 
       return regularRepositories.concat(pinnedRepositories);
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      throw err;
     }
   }
 
@@ -84,20 +97,14 @@ export class GitHubApiClient {
         await this.gql.request<GitHubRepositoryViewDTO>(createViewRepositoryGqlRequest(repoName))
       ).payload;
 
-      if (githubResponseData == null) {
-        return null;
-      }
-
       const repository = githubResponseData.repository;
       const githubReadme = repository?.readme;
 
       let projectReadme: ProjectReadmeViewDTO;
-      const projectReadmeEncoding: Encoding = "base64";
 
       if (githubReadme != null) {
         projectReadme = {
-          content: Buffer.from(githubReadme.content, "utf-8").toString(projectReadmeEncoding),
-          encoding: projectReadmeEncoding
+          content: Buffer.from(githubReadme.content, this.GITHUB_README_ENCODING).toString("base64")
         };
       }
 
@@ -108,7 +115,7 @@ export class GitHubApiClient {
           updatedTimestamp: repository.updatedAt,
           totalCommits: repository.commit?.history?.totalCount || 0
         },
-        readme: projectReadme || null
+        readme: projectReadme
       };
     } catch (err) {
       console.error(err);
@@ -163,6 +170,9 @@ export class GitHubApiClient {
       }
 
       return this.mapCodeLanguagesBytesToPercentage(githubResponseData);
-    } catch (err) {}
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
   }
 }

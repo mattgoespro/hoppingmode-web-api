@@ -1,5 +1,3 @@
-import { Encoding } from "crypto";
-
 export interface GitHubRepositoryDTO {
   name: string;
   description: string;
@@ -12,6 +10,9 @@ export interface GitHubRepositoryDTO {
         name: string;
       };
     }[];
+  };
+  owner?: {
+    login: string;
   };
 }
 
