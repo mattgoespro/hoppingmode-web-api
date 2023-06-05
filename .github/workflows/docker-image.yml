@@ -27,6 +27,6 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          build-args: NPM_AUTH_TOKEN=$(echo "$NPM_AUTH_TOKEN" | base64 --decode)
+          build-args: NPM_AUTH_TOKEN=${{ secrets.NPM_AUTH_TOKEN }}
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/hoppingmode-web-api:latest
