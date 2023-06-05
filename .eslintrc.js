@@ -1,35 +1,24 @@
-module.exports = {
-  env: {
-    amd: true,
-    node: true
-  },
-  extends: [
-    "eslint:recommended",
-    "prettier",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
-  ],
+/** @type {import('eslint').Linter.BaseConfig} */
+const config = {
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module"
   },
   plugins: ["@typescript-eslint"],
-  settings: {
-    "import/resolver": {
-      typescript: {}
-    }
-  },
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
   rules: {
-    "prettier/prettier": [
-      "error",
-      {
-        singleQuote: false,
-        parser: "typescript"
-      }
-    ],
-    "arrow-body-style": "off",
-    "prefer-arrow-callback": "off",
-    "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }]
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }
+    ]
+  },
+  env: {
+    amd: true,
+    node: true,
+    es2021: true
   }
 };
+
+module.exports = config;

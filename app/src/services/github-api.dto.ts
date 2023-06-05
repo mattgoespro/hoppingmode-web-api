@@ -53,16 +53,5 @@ export interface GitHubRepositoryViewDTO {
 export type GitHubRepositoryCodeLanguageDTO = { [key: string]: number };
 
 export interface GitHubGraphqlErrorDTO {
-  message: string;
-  type?: string;
-  path?: string[];
-  extensions?: {
-    code: string;
-    typeName: string;
-    fieldName: string;
-  };
-  locations?: {
-    line: number;
-    column: number;
-  }[];
+  type: string;
 }

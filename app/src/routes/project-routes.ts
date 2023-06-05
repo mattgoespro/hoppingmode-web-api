@@ -1,6 +1,6 @@
 import { ParameterizedRequest } from "../models/parameterized-request";
+import { ApiError } from "../services/api.model";
 import { GitHubApiClient } from "../services/github.service";
-import { respondWithErrorStatus } from "../util";
 import Express from "express";
 
 const githubHttpClient = new GitHubApiClient();
@@ -38,7 +38,7 @@ export async function listProjects(
     .then((resp) => {
       response.status(200).json(resp);
     })
-    .catch((err) => respondWithErrorStatus(response, err));
+    .catch((err) => response.sendStatus(err.getApiError().status));
 }
 
 export async function getProject(
@@ -50,7 +50,7 @@ export async function getProject(
     .then((resp) => {
       response.status(200).json(resp);
     })
-    .catch((err) => respondWithErrorStatus(response, err));
+    .catch((err: ApiError) => response.sendStatus(err.getApiError().status));
 }
 
 export async function getProjectCodeLanguages(
@@ -60,5 +60,5 @@ export async function getProjectCodeLanguages(
   githubHttpClient
     .constructProjectCodingLanguagesDTO(request.params.name)
     .then((resp) => response.status(200).json(resp))
-    .catch((err) => respondWithErrorStatus(response, err));
+    .catch((err: ApiError) => response.sendStatus(err.getApiError().status));
 }

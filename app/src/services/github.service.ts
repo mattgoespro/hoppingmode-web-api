@@ -12,13 +12,14 @@ import {
   GitHubRepositoryViewDTO,
   ListGitHubRepositoriesDTO
 } from "./github-api.dto";
-import { roundCascading } from "../util";
+import { cascadeRound } from "../util";
 import {
   GITHUB_LIST_REPOSITORIES_GQL,
   GITHUB_LOGIN,
   createViewRepositoryGqlRequest
 } from "./github-api.model";
 import { Encoding } from "crypto";
+import { ApiError } from "./api.model";
 
 export class GitHubApiClient {
   private PORTFOLIO_TAG = "portfolio-project";
@@ -47,7 +48,13 @@ export class GitHubApiClient {
     });
   }
 
-  private ownsPortfolioProject(repo: GitHubRepositoryDTO) {
+  /**
+   * Whether to list the repository as a portfolio project.
+   *
+   * Handles the case where the repository is pinned on my profile but
+   * may be owned by a different user.
+   */
+  private listProject(repo: GitHubRepositoryDTO) {
     const login = repo.owner?.login;
 
     if (login != null && login !== GITHUB_LOGIN) {
@@ -73,7 +80,7 @@ export class GitHubApiClient {
       ).payload;
 
       const regularRepositories = githubRepositoryList.all.list
-        .filter(this.ownsPortfolioProject.bind(this))
+        .filter(this.listProject.bind(this))
         .filter(
           (repo) =>
             githubRepositoryList.pinned.list.findIndex((repo2) => repo2.name === repo.name) === -1
@@ -81,13 +88,12 @@ export class GitHubApiClient {
         .map((repo) => this.constructProjectListDTO(repo, false));
 
       const pinnedRepositories = githubRepositoryList.pinned.list
-        .filter(this.ownsPortfolioProject.bind(this))
+        .filter(this.listProject.bind(this))
         .map((repo) => this.constructProjectListDTO(repo, true));
 
       return regularRepositories.concat(pinnedRepositories);
     } catch (err) {
-      console.error(err);
-      throw err;
+      throw new ApiError(err);
     }
   }
 
@@ -118,8 +124,7 @@ export class GitHubApiClient {
         readme: projectReadme
       };
     } catch (err) {
-      console.error(err);
-      throw err;
+      throw new ApiError(err);
     }
   }
 
@@ -133,26 +138,28 @@ export class GitHubApiClient {
   private mapCodeLanguagesBytesToPercentage(
     codeLanguagesByteMap: ProjectCodingLanguagesDTO
   ): ProjectCodingLanguagesDTO {
-    const totalBytes = Object.values(codeLanguagesByteMap).reduce((val, s) => val + s, 0);
-    const contributions = roundCascading(
-      Object.values(codeLanguagesByteMap).map((numBytes) => (numBytes / totalBytes) * 100)
+    const projectSizeBytes = Object.values(codeLanguagesByteMap).reduce((val, s) => val + s, 0);
+    const percentContributions = cascadeRound(
+      Object.values(codeLanguagesByteMap).map((numBytes) => (numBytes / projectSizeBytes) * 100)
     );
 
-    const codeLanguagePercentageMap: ProjectCodingLanguagesDTO = {};
+    const contributionMap: ProjectCodingLanguagesDTO = {};
 
-    for (let i = 0; i < Object.keys(codeLanguagesByteMap).length; i++) {
+    let i = 0;
+
+    for (const language in codeLanguagesByteMap) {
       /**
        * If language byte contribution was rounded to 0, prevalence of language
        * in project is insignificant, so ignore.
        */
-      if (contributions[i] === 0) {
+      if (percentContributions[i] === 0) {
         continue;
       }
 
-      codeLanguagePercentageMap[Object.keys(codeLanguagesByteMap)[i]] = contributions[i];
+      contributionMap[language] = percentContributions[i++];
     }
 
-    return codeLanguagePercentageMap;
+    return contributionMap;
   }
 
   public async constructProjectCodingLanguagesDTO(
@@ -171,8 +178,7 @@ export class GitHubApiClient {
 
       return this.mapCodeLanguagesBytesToPercentage(githubResponseData);
     } catch (err) {
-      console.error(err);
-      throw err;
+      throw new ApiError(err);
     }
   }
 }
