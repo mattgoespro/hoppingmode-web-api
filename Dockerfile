@@ -1,18 +1,13 @@
 FROM node:20.2-alpine3.17
 
-ARG NPM_TOKEN
-
-RUN echo ${NPM_TOKEN}
+ARG NPM_AUTH_TOKEN
 
 WORKDIR /app
 
-COPY .npmrc /root/.npmrc
+RUN echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" >> ./.npmrc
 
 COPY package*.json ./
-
 RUN npm i
-
-RUN rm -f /root/.npmrc
 
 COPY . ./
 

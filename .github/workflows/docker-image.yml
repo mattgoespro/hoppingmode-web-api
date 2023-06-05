@@ -32,7 +32,7 @@ jobs:
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
         run: |
-          sudo rm -f $GITHUB_WORKSPACE/.npmrc 
+          sudo rm -f $GITHUB_WORKSPACE/.npmrc
           echo "$NPM_AUTH_TOKEN" | base64 --decode | echo "//registry.npmjs.org/:_authToken=$(tee)" >> $GITHUB_WORKSPACE/.npmrc
           cat $GITHUB_WORKSPACE/.npmrc
       - name: Build and push
@@ -40,5 +40,6 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
+          build-args: NPM_AUTH_TOKEN=$(echo "$NPM_AUTH_TOKEN" | base64 --decode)
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/hoppingmode-web-api:latest
