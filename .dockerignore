@@ -1,6 +1,25 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependencies
 node_modules
-npm-debug.log
+
+# Builds
 dist
-.vscode
-.github
-thunder-tests
+
+# IDE
+.vscode/
+.github/
+thunder-tests/
+.husky/
+scripts/
+.git*
+.eslintrc.js
+.prettierrc.js
+*.md
+
+# Secrets
+npm_secret
+github_secret

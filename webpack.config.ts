@@ -1,7 +1,8 @@
 import { resolve } from "path";
 import nodeExternals from "webpack-node-externals";
+import webpack from "webpack";
 
-const config = {
+const config: webpack.Configuration = {
   entry: "./app/index.ts",
   mode: "production",
   target: "node",

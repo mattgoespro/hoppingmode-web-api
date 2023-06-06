@@ -17,17 +17,17 @@ fi
 
 case "$1" in
     "build-image")
-        if [ -z "$NPM_AUTH_TOKEN" ]; then
-            echo "Environment variable 'NPM_AUTH_TOKEN' not set"
+        if [ ! -f "npm_secret" ]; then
+            echo "npm secret file not found."
             exit 1 >> /dev/null
         fi
         
-        docker build . -t hoppingmode-web/api --build-arg NPM_AUTH_TOKEN="$NPM_AUTH_TOKEN"
+        docker build . -t hoppingmode-web/api --secret id=npm_secret,src=npm_secret
     ;;
     "run-image")
         case "$2" in
             "local")
-                (docker rm -f api || true) && docker run -d -p 8080:3000 --name api hoppingmode-web/api
+                (docker rm -f api || true) && docker run -d -p 8080:3000 --name api -e PROXY_GITHUB_AUTH_TOKEN="$PROXY_GITHUB_AUTH_TOKEN" -e PORT=3000 hoppingmode-web/api
             ;;
             "dockerhub")
                 mattgoespro hoppingmode-web run -i api --rm

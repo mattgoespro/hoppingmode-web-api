@@ -12,10 +12,8 @@ node_modules
 # Builds
 dist
 
-# Misc
-.env
-temp
-
+# Secrets
 .env*
 !.env.project
 !.env.vault
+npm_secret
