@@ -25,6 +25,7 @@ jobs:
           echo $GITHUB_WORKSPACE
           echo ${{ secrets.NPM_TOKEN }}
           echo -n ${{ secrets.NPM_TOKEN }} >> $GITHUB_WORKSPACE/npm_secret
+          ls -a $GITHUB_WORKSPACE
           cat $GITHUB_WORKSPACE/npm_secret
       - name: Build and push
         uses: docker/build-push-action@v4
