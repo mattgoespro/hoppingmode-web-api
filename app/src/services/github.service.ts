@@ -30,7 +30,7 @@ export class GitHubApiClient {
   private http: AxiosInstance;
 
   constructor() {
-    const githubAuthToken = process.env.PROXY_GITHUB_AUTH_TOKEN;
+    const githubAuthToken = process.env.API_GITHUB_TOKEN;
 
     this.gql = new GraphQLClient(this.githubGqlApi, {
       headers: {

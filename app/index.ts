@@ -1,11 +1,12 @@
 import generateBanner from "figlet";
 import server from "./src/server";
+import chalk from "chalk";
 
 /**
  * Get GitHub API auth token from .env.
  */
 function validateGitHubAuthToken() {
-  const authToken = process.env.PROXY_GITHUB_AUTH_TOKEN;
+  const authToken = process.env.API_GITHUB_TOKEN;
 
   if (authToken == null) {
     throw new Error("Missing GitHub API authorization token.");
@@ -19,11 +20,17 @@ function validateGitHubAuthToken() {
 
 validateGitHubAuthToken();
 
-server.listen(process.env.PORT || 8080, () =>
-  console.log(
-    generateBanner.textSync("Server    started   ...", {
-      font: "Standard",
-      whitespaceBreak: true
-    })
-  )
-);
+const port = process.env.PORT || 8080;
+
+server.listen(port, () => {
+  const banner = generateBanner.textSync(["Started", "server"].join(" ".repeat(3)), {
+    font: "Standard",
+    horizontalLayout: "default",
+    verticalLayout: "default",
+    width: 80
+  });
+  console.log(banner);
+  console.log("-".repeat(banner.length / 6));
+  console.log();
+  console.log(`${chalk.gray(`[${new Date().toUTCString()}]`)} Listening on port ${port}`);
+});

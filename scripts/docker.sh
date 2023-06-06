@@ -27,7 +27,7 @@ case "$1" in
     "run-image")
         case "$2" in
             "local")
-                (docker rm -f api || true) && docker run -d -p 8080:3000 --name api -e PROXY_GITHUB_AUTH_TOKEN="$PROXY_GITHUB_AUTH_TOKEN" -e PORT=3000 hoppingmode-web/api
+                (docker rm -f api || true) && docker run -d -p 8080:3000 --name api -e API_GITHUB_TOKEN="$API_GITHUB_TOKEN" -e PORT=3000 hoppingmode-web/api
             ;;
             "dockerhub")
                 mattgoespro hoppingmode-web run -i api --rm

@@ -29,7 +29,7 @@ const colorLogging = (
   req: IncomingMessage,
   res: ServerResponse
 ) => {
-  const date = `[${chalk.bold.hex("#00ad3d")(tokens.date(req, res))}]`;
+  const date = `[${chalk.gray(tokens.date(req, res))}]`;
   const method = chalk.hex("#663b8c").bold(tokens.method(req, res));
   const url = chalk.bold.hex("#6e6e6e")(tokens.url(req, res));
   const status = statusText({
