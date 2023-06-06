@@ -21,7 +21,11 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Write NPM auth code to npm_secrets
-        run: echo ${{ secrets.NPM_TOKEN }} >> $GITHUB_WORKSPACE/npm_secret
+        run: |
+          echo $GITHUB_WORKSPACE
+          echo ${{ secrets.NPM_TOKEN }}
+          echo ${{ secrets.NPM_TOKEN }} >> $GITHUB_WORKSPACE/npm_secret
+          cat $GITHUB_WORKSPACE/npm_secret
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
