@@ -22,17 +22,13 @@ jobs:
         uses: docker/setup-buildx-action@v2
       - name: Write NPM auth code to npm_secrets
         run: |
-          echo $GITHUB_WORKSPACE
-          echo ${{ secrets.NPM_TOKEN }}
-          echo -n ${{ secrets.NPM_TOKEN }} >> $GITHUB_WORKSPACE/npm_secret
-          ls -a $GITHUB_WORKSPACE
-          cat $GITHUB_WORKSPACE/npm_secret
+          echo ${{ secrets.NPM_TOKEN }} >> $GITHUB_WORKSPACE/npm_secret
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
           context: .
           file: ./Dockerfile
           secrets: |
-            id=npm_secret,src=$GITHUB_WORKSPACE/npm_secret
+            "npm_secret=${{ secrets.NPM_TOKEN }}"
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/hoppingmode-web-api:latest
