@@ -5,9 +5,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # Set NPM registry login auth token for private package downloads
-RUN --mount=type=secret,id=npm_secret \
-    grep "npm_" /run/secrets/npm_secret | \
-    tee -a ./.npmrc
+RUN --mount=type=secret,id=npm_secret,src=npm_secret \
+    grep npm_ /run/secrets/npm_secret >> ./.npmrc
 
 RUN npm ci
 
