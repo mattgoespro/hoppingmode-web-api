@@ -12,6 +12,9 @@ node_modules
 # Builds
 dist
 
+# Generated
+app/src/generated
+
 # Secrets
 .env*
 !.env.project
