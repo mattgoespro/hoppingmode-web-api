@@ -138,6 +138,10 @@ export class GitHubApiClient {
   private mapCodeLanguagesBytesToPercentage(
     codeLanguagesByteMap: ProjectCodingLanguagesDTO
   ): ProjectCodingLanguagesDTO {
+    if (codeLanguagesByteMap == null) {
+      return {};
+    }
+
     const projectSizeBytes = Object.values(codeLanguagesByteMap).reduce((val, s) => val + s, 0);
     const percentContributions = cascadeRound(
       Object.values(codeLanguagesByteMap).map((numBytes) => (numBytes / projectSizeBytes) * 100)
@@ -171,10 +175,6 @@ export class GitHubApiClient {
           `/repos/mattgoespro/${repoName}/languages`
         )
       ).data;
-
-      if (githubResponseData == null) {
-        return {};
-      }
 
       return this.mapCodeLanguagesBytesToPercentage(githubResponseData);
     } catch (err) {

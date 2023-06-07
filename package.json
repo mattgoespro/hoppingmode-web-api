@@ -1,4 +1,5 @@
 {
+  "author": "mattgoespro",
   "name": "hoppingmode-web-api",
   "version": "1.0.0",
   "description": "",
@@ -13,7 +14,6 @@
     "docker:run-dockerhub": "./scripts/docker.sh run-image dockerhub",
     "prepare": "husky install"
   },
-  "author": "hoppingmode",
   "dependencies": {
     "@mattgoespro/hoppingmode-web-core": "^1.0.3",
     "aos": "^2.3.4",
@@ -48,7 +48,6 @@
     "babel-loader": "^9.1.2",
     "dotenv": "^16.1.4",
     "eslint": "^8.42.0",
-    "eslint-config-prettier": "^8.8.0",
     "eslint-import-resolver-typescript": "^3.5.5",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
