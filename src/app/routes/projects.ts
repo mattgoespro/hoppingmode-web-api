@@ -1,7 +1,7 @@
-import { ParameterizedRequest } from "../models/parameterized-request";
-import { ApiError } from "../services/api.model";
-import { GitHubApiClient } from "../services/github-api-query.service";
 import Express from "express";
+import { GitHubApiClient } from "../services/github.service";
+import { ParameterizedRequest } from "../services/request";
+import { ApiError } from "../services/server.model";
 
 const githubHttpClient = new GitHubApiClient();
 

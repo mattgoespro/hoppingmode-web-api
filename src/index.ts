@@ -1,26 +1,10 @@
+import chalk from "chalk";
 import generateBanner from "figlet";
 import server from "./app/server";
-import chalk from "chalk";
+import { setup } from "./environment/environment";
 
-/**
- * Get GitHub API auth token from .env.
- */
-function validateGitHubAuthToken() {
-  const authToken = process.env.API_GITHUB_TOKEN;
-
-  if (authToken == null) {
-    throw new Error("Missing GitHub API authorization token.");
-  }
-  const validateTokenFormat = /^ghp_[A-Za-z0-9]{36}$/;
-
-  if (authToken == null || !validateTokenFormat.test(authToken)) {
-    throw new Error("The provided GitHub API authorization token format is invalid.");
-  }
-}
-
-validateGitHubAuthToken();
-
-const port = process.env.PORT || 8080;
+const environment = setup();
+const port = environment.port;
 
 server.listen(port, () => {
   const banner = generateBanner.textSync(["Started", "server"].join(" ".repeat(3)), {

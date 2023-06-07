@@ -1,9 +1,9 @@
 import Express from "express";
+import helmet from "helmet";
+import cors from "./middleware/cors";
 import requestRateLimiter from "./middleware/request-rate-limiter";
 import loggerMiddleware from "./middleware/response-logger";
-import cors from "./middleware/cors";
-import helmet from "helmet";
-import ApiRouter from "./routes/api-router-configuration";
+import ApiRouter from "./server-config";
 
 const app = Express();
 

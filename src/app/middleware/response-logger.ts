@@ -1,5 +1,5 @@
-import chalk from "chalk";
 import { IncomingMessage, ServerResponse } from "http";
+import chalk from "chalk";
 import { StatusCodes, getReasonPhrase, getStatusCode } from "http-status-codes";
 import morgan from "morgan";
 

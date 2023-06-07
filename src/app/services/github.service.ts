@@ -1,3 +1,4 @@
+import { Encoding } from "crypto";
 import {
   ProjectCodingLanguagesDTO,
   ProjectViewDTO,
@@ -6,20 +7,19 @@ import {
 } from "@mattgoespro/hoppingmode-web-core";
 import axios, { AxiosInstance } from "axios";
 import { GraphQLClient } from "graphql-request";
+import { roundClone } from "../util";
 import {
   GitHubRepositoryCodeLanguageDTO,
   GitHubRepositoryDTO,
   GitHubRepositoryViewDTO,
   ListGitHubRepositoriesDTO
-} from "./github-api.dto";
-import { cascadeRound } from "../util";
+} from "./github.dto";
 import {
   GITHUB_LIST_REPOSITORIES_GQL,
   GITHUB_LOGIN,
   createViewRepositoryGqlRequest
-} from "./github-api.model";
-import { Encoding } from "crypto";
-import { ApiError } from "./api.model";
+} from "./github.model";
+import { ApiError } from "./server.model";
 
 export class GitHubApiClient {
   private PORTFOLIO_TAG = "portfolio-project";
@@ -143,7 +143,7 @@ export class GitHubApiClient {
     }
 
     const projectSizeBytes = Object.values(codeLanguagesByteMap).reduce((val, s) => val + s, 0);
-    const percentContributions = cascadeRound(
+    const percentContributions = roundClone(
       Object.values(codeLanguagesByteMap).map((numBytes) => (numBytes / projectSizeBytes) * 100)
     );
 

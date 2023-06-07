@@ -5,7 +5,7 @@
  *
  *  Credit: https://stackoverflow.com/a/792476/6265995
  */
-export function cascadeRound(arr: number[]) {
+export function roundClone(arr: number[]) {
   const total = arr.reduce((a, b) => a + b, 0);
   const rounded = arr.map((n) => Math.round(n));
   const sum = rounded.reduce((a, b) => a + b, 0);

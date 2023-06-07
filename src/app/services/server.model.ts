@@ -7,7 +7,7 @@ export type ApiErrorResponse = {
 };
 
 export class ApiError extends Error {
-  constructor(private error: AxiosError | ClientError) {
+  constructor(private error: Error | AxiosError | ClientError) {
     super(error.message);
   }
 
@@ -36,7 +36,7 @@ export class ApiError extends Error {
    * @param error
    * @returns
    */
-  private mapErrorToApiError(error: AxiosError | ClientError): ApiErrorResponse {
+  private mapErrorToApiError<T extends Error>(error: T): ApiErrorResponse {
     if (error instanceof AxiosError) {
       if (error.response) {
         /**
@@ -89,6 +89,9 @@ export class ApiError extends Error {
         status: this.mapGqlToHttpStatus(gqlError.type)
       };
     }
+
+    console.error("In internal error occurred");
+    throw this.error;
   }
 
   public getApiError(): ApiErrorResponse {
