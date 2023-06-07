@@ -1,5 +1,5 @@
 import generateBanner from "figlet";
-import server from "./src/server";
+import server from "./app/server";
 import chalk from "chalk";
 
 /**

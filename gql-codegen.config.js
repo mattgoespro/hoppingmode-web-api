@@ -3,7 +3,7 @@ const config = {
   overwrite: true,
   schema: "./tools/github-api.schema.graphql",
   generates: {
-    "app/src/generated/github-api.schema.ts": {
+    "src/app/generated/github-api.schema.ts": {
       plugins: ["typescript", "typescript-document-nodes"]
     }
   }

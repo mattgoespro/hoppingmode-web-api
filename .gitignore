@@ -13,7 +13,7 @@ node_modules
 dist
 
 # Generated
-app/src/generated
+src/app/generated
 
 # Secrets
 .env*

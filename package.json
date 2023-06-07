@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "npm run codegen && nodemon -r dotenv/config app/index.ts",
+    "start": "npm run codegen && nodemon -r dotenv/config src/index.ts",
     "codegen": "graphql-codegen --config gql-codegen.config.js",
     "build": "npm run codegen && webpack --mode production",
     "test": "tsc --noEmit",
@@ -13,10 +13,10 @@
     "docker:build": "./scripts/docker.sh build-image",
     "docker:run-local": "./scripts/docker.sh run-image local",
     "docker:run-dockerhub": "./scripts/docker.sh run-image dockerhub",
-    "prepare": "husky install",
     "clean": "rm -rf dist && rm -rf node_modules",
-    "install": "npm install",
-    "postinstall": "npm run codegen"
+    "install-deps": "npm install",
+    "postinstall": "npm run codegen",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@mattgoespro/hoppingmode-web-core": "^1.0.3",
