@@ -5,6 +5,19 @@
     "ms-azuretools.vscode-docker",
     "christian-kohler.npm-intellisense",
     "rangav.vscode-thunder-client",
-    "GraphQL.vscode-graphql"
+    "graphql.vscode-graphql",
+    "shakram02.bash-beautify",
+    "mads-hartmann.bash-ide-vscode",
+    "jeff-hykin.better-dockerfile-syntax",
+    "jeff-hykin.better-shellscript-syntax",
+    "alefragnani.bookmarks",
+    "naumovs.color-highlight",
+    "royaction.color-manager",
+    "github.vscode-github-actions",
+    "yzhang.markdown-all-in-one",
+    "davidanson.vscode-markdownlint",
+    "ahmadalli.vscode-nginx-conf",
+    "herrmannplatz.npm-dependency-links",
+    "timonwong.shellcheck"
   ]
 }

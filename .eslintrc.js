@@ -12,6 +12,11 @@ const config = {
     "plugin:import/typescript"
   ],
   plugins: ["@typescript-eslint"],
+  settings: {
+    "import/resolver": {
+      typescript: {}
+    }
+  },
   rules: {
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": [
@@ -34,7 +39,8 @@ const config = {
   env: {
     amd: true,
     node: true,
-    es2021: true
+    es2021: true,
+    commonjs: true
   }
 };
 

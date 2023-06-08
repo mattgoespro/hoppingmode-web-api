@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from "http";
 import chalk from "chalk";
 import { StatusCodes, getReasonPhrase, getStatusCode } from "http-status-codes";
-import morgan from "morgan";
+import { TokenIndexer, token } from "morgan";
 
 function statusText(status: { code: string; reason: string; format: string }) {
   const errorCodes = [
@@ -25,7 +25,7 @@ function statusText(status: { code: string; reason: string; format: string }) {
 }
 
 const colorLogging = (
-  tokens: morgan.TokenIndexer<IncomingMessage, ServerResponse>,
+  tokens: TokenIndexer<IncomingMessage, ServerResponse>,
   req: IncomingMessage,
   res: ServerResponse
 ) => {
@@ -41,8 +41,8 @@ const colorLogging = (
   return chalk.bgBlack([date, method, url, status, responseTime].join(" "));
 };
 
-const loggerMiddleware = morgan.token("status-reason", (_req, res) =>
-  getReasonPhrase(res.statusCode)
-)(colorLogging);
+const loggerMiddleware = token("status-reason", (_req, res) => getReasonPhrase(res.statusCode))(
+  colorLogging
+);
 
 export default loggerMiddleware;

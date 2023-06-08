@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import generateBanner from "figlet";
+import { textSync } from "figlet";
 import server from "./app/server";
 import { setup } from "./environment/environment";
 
@@ -7,7 +7,7 @@ const environment = setup();
 const port = environment.port;
 
 server.listen(port, () => {
-  const banner = generateBanner.textSync(["Started", "server"].join(" ".repeat(3)), {
+  const banner = textSync(["Started", "server"].join(" ".repeat(3)), {
     font: "Standard",
     horizontalLayout: "default",
     verticalLayout: "default",

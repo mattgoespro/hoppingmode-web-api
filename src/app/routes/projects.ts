@@ -1,4 +1,4 @@
-import Express from "express";
+import express from "express";
 import { GitHubApiClient } from "../services/github.service";
 import { ParameterizedRequest } from "../services/request";
 import { ApiError } from "../services/server.model";
@@ -31,7 +31,7 @@ export const apiRoutes: ApiRoutes = {
 
 export async function listProjects(
   _request: ParameterizedRequest<ListProjectsRequest>,
-  response: Express.Response
+  response: express.Response
 ) {
   githubHttpClient
     .constructProjectListDTOs()
@@ -43,7 +43,7 @@ export async function listProjects(
 
 export async function getProject(
   request: ParameterizedRequest<GetProjectRequest>,
-  response: Express.Response
+  response: express.Response
 ) {
   githubHttpClient
     .constructProjectViewDTO(request.params.name)
@@ -55,7 +55,7 @@ export async function getProject(
 
 export async function getProjectCodeLanguages(
   request: ParameterizedRequest<GetProjectCodeLanguagesRequest>,
-  response: Express.Response
+  response: express.Response
 ) {
   githubHttpClient
     .constructProjectCodingLanguagesDTO(request.params.name)

@@ -1,7 +1,7 @@
-import Express from "express";
+import { Router } from "express";
 import { apiRoutes, getProject, getProjectCodeLanguages, listProjects } from "./routes/projects";
 
-const serverRouter = Express.Router();
+const serverRouter = Router();
 
 /**
  * List all projects
