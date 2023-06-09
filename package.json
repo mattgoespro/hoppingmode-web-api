@@ -5,8 +5,8 @@
   "description": "",
   "scripts": {
     "start": "nodemon -r dotenv/config src/index.ts",
-    "build": "webpack --mode production",
     "test": "tsc --noEmit",
+    "build": "webpack --mode production",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "format": "prettier src --check",
