@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import { textSync } from "figlet";
 import server from "./app/server";
 import { setup } from "./environment/environment";
@@ -14,7 +13,5 @@ server.listen(port, () => {
     width: 80
   });
   console.log(banner);
-  console.log("-".repeat(banner.length / 6));
-  console.log();
-  console.log(`${chalk.gray(`[${new Date().toUTCString()}]`)} Listening on port ${port}`);
+  console.log(`\n[${new Date().toUTCString()}] Listening on port ${port}`);
 });

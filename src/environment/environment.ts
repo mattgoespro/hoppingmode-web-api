@@ -17,14 +17,16 @@ function validateGitHubToken() {
 /**
  * Setup the environment.
  */
-function setup() {
+export function setup() {
   validateGitHubToken();
 
-  let port = +process.env.PORT;
+  let port = 8080;
 
-  if (port == null) {
+  if (process.env.PORT == null) {
     console.warn("Port not specified, defaulting to 8080");
     port = 8080;
+  } else {
+    port = Number.parseFloat(process.env.PORT);
   }
 
   if (Number.isNaN(port)) {
@@ -35,5 +37,3 @@ function setup() {
     port
   };
 }
-
-export { setup };

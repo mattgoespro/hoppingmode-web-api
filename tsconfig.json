@@ -5,6 +5,7 @@
     "target": "es2020",
     "module": "commonjs",
     "rootDir": "src",
+    "strict": false,
     "sourceMap": false,
     "esModuleInterop": true,
     "allowJs": true,

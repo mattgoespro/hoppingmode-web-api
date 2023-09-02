@@ -4,7 +4,7 @@ import {
   ProjectViewDTO,
   ProjectListDTO,
   ProjectReadmeViewDTO
-} from "@mattgoespro/hoppingmode-web-core";
+} from "@mattgoespro/hw";
 import axios, { AxiosInstance } from "axios";
 import { GraphQLClient } from "graphql-request";
 import { roundClone } from "../util";
@@ -106,7 +106,7 @@ export class GitHubApiClient {
       const repository = githubResponseData.repository;
       const githubReadme = repository?.readme;
 
-      let projectReadme: ProjectReadmeViewDTO;
+      let projectReadme: ProjectReadmeViewDTO = null;
 
       if (githubReadme != null) {
         projectReadme = {
