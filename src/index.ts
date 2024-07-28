@@ -1,6 +1,6 @@
 import { textSync } from "figlet";
 import server from "./app/server";
-import { setup } from "./environment/environment";
+import { setup } from "./environment";
 
 const environment = setup();
 const port = environment.port;

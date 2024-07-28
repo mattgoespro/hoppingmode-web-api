@@ -1,4 +1,29 @@
 {
-  "typescript.tsdk": "node_modules\\typescript\\lib",
-  "thunder-client.saveToWorkspace": true
+  "eslint.format.enable": false,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always",
+  },
+  "npm-intellisense.recursivePackageJsonLookup": false,
+  "npm-outdated.majorUpdateProtection": false,
+  "terminal.integrated.defaultProfile.windows": "bash-node",
+  "terminal.integrated.profiles.windows": {
+    "bash-node": {
+      "args": [
+        "-i"
+      ],
+      "color": "terminal.ansiGreen",
+      "env": {
+        "PATH": "${env:PATH};${workspaceFolder}\\node_modules\\.bin"
+      },
+      "icon": "terminal-bash",
+      "path": "${env:ProgramFiles}\\Git\\bin\\bash.exe",
+      "overrideName": true
+    }
+  },
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }

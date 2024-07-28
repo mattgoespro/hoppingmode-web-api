@@ -10,7 +10,7 @@ function validateGitHubToken() {
   const validateTokenFormat = /^ghp_[A-Za-z0-9]{36}$/;
 
   if (githubToken == null || !validateTokenFormat.test(githubToken)) {
-    throw new Error("The provided GitHub API authorization token format is invalid.");
+    throw new Error("Invalid GitHub API authorization token format.");
   }
 }
 
@@ -20,17 +20,15 @@ function validateGitHubToken() {
 export function setup() {
   validateGitHubToken();
 
-  let port = 8080;
+  let port = Number.parseFloat(process.env.PORT);
 
   if (process.env.PORT == null) {
-    console.warn("Port not specified, defaulting to 8080");
+    console.warn("Using default port: 8080");
     port = 8080;
-  } else {
-    port = Number.parseFloat(process.env.PORT);
   }
 
   if (Number.isNaN(port)) {
-    throw new Error("Invalid port");
+    throw new Error("Invalid port: ${port}");
   }
 
   return {

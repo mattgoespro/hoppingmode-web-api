@@ -8,8 +8,8 @@
 
 ### Project View
 
-- Has no commit history
-- Primary branch is not named _main_, possibly _master_
+- Handle repository with no commit history
+- Handle repository's who's main branch is not named _main_ (eg. _master_)
 - Readme file doesn't exist
 
 ## Logging

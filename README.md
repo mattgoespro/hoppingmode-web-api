@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **hoppingmode-web-api** project is a Docker micro-service that runs alongside **hoppingmode-web-frontend**, my Code Portfolio website.
+The **hoppingmode-web-api** project is a Docker microservice that runs alongside **hoppingmode-web-frontend**, my Code Portfolio website.
 
 ## Features
 

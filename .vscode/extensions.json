@@ -4,13 +4,11 @@
     "dbaeumer.vscode-eslint",
     "ms-azuretools.vscode-docker",
     "christian-kohler.npm-intellisense",
-    "rangav.vscode-thunder-client",
     "graphql.vscode-graphql",
     "shakram02.bash-beautify",
     "mads-hartmann.bash-ide-vscode",
     "jeff-hykin.better-dockerfile-syntax",
     "jeff-hykin.better-shellscript-syntax",
-    "alefragnani.bookmarks",
     "naumovs.color-highlight",
     "royaction.color-manager",
     "github.vscode-github-actions",
@@ -18,6 +16,16 @@
     "davidanson.vscode-markdownlint",
     "ahmadalli.vscode-nginx-conf",
     "herrmannplatz.npm-dependency-links",
-    "timonwong.shellcheck"
+    "timonwong.shellcheck",
+    "mikestead.dotenv",
+    "usernamehw.errorlens",
+    "postman.postman-for-vscode",
+    "mskelton.npm-outdated",
+    "github.copilot-chat",
+    "github.copilot",
+    "felipecaputo.git-project-manager",
+    "pkief.material-icon-theme",
+    "richie5um2.vscode-sort-json",
+    "meganrogge.template-string-converter"
   ]
 }
