@@ -2,12 +2,12 @@ import { Encoding } from "crypto";
 import {
   ProjectCodingLanguagesDTO,
   ProjectViewDTO,
-  ProjectListDTO,
+  ProjectSummaryDTO,
   ProjectReadmeViewDTO
 } from "@mattgoespro/hw";
 import axios, { AxiosInstance } from "axios";
 import { GraphQLClient } from "graphql-request";
-import { roundClone } from "../util";
+import { roundClone } from "@shared/utils";
 import {
   GitHubRepositoryCodeLanguageDTO,
   GitHubRepositoryDTO,
@@ -64,16 +64,16 @@ export class GitHubApiClient {
     return repo.topics.list.findIndex((t) => t.topicItem.name === this.PORTFOLIO_TAG) !== -1;
   }
 
-  private constructProjectListDTO(repo: GitHubRepositoryDTO, pinned: boolean): ProjectListDTO {
+  private constructProjectListDTO(repo: GitHubRepositoryDTO, pinned: boolean): ProjectSummaryDTO {
     return {
       name: repo.name,
       description: repo.description,
-      pinned,
-      githubUrl: repo.url
+      pinned: pinned,
+      url: repo.url
     };
   }
 
-  public async constructProjectListDTOs(): Promise<ProjectListDTO[]> {
+  public async constructProjectListDTOs(): Promise<ProjectSummaryDTO[]> {
     try {
       const githubRepositoryList = (
         await this.gql.request<ListGitHubRepositoriesDTO>(GITHUB_LIST_REPOSITORIES_GQL)

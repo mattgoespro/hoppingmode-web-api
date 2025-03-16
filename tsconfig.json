@@ -12,6 +12,8 @@
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@shared/*": ["src/app/shared/*"]
+    }
   }
 }

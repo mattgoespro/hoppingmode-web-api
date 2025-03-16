@@ -1,29 +1,31 @@
 {
-  "eslint.format.enable": false,
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true,
-    "editor.formatOnPaste": true
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true
   },
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "always",
+    "source.fixAll.eslint": "always"
   },
+  "eslint.format.enable": false,
+  "eslint.useFlatConfig": true,
   "npm-intellisense.recursivePackageJsonLookup": false,
   "npm-outdated.majorUpdateProtection": false,
   "terminal.integrated.defaultProfile.windows": "bash-node",
   "terminal.integrated.profiles.windows": {
     "bash-node": {
-      "args": [
-        "-i"
-      ],
+      "args": ["-i"],
       "color": "terminal.ansiGreen",
       "env": {
-        "PATH": "${env:PATH};${workspaceFolder}\\node_modules\\.bin"
+        "PATH": "${workspaceFolder}\\node_modules\\.bin;${env:PATH}"
       },
       "icon": "terminal-bash",
-      "path": "${env:ProgramFiles}\\Git\\bin\\bash.exe",
-      "overrideName": true
+      "overrideName": true,
+      "path": "${env:ProgramFiles}\\Git\\bin\\bash.exe"
     }
+  },
+  "shellcheck.ignorePatterns": {
+    "**/.env*": true
   },
   "typescript.tsdk": "node_modules\\typescript\\lib"
 }

@@ -1,12 +1,16 @@
 # Things to do
 
+## Authentication
+
+Enable HTTP authentication using bearer tokens.
+
 ## Testing
 
 ### Project List
 
 - Test if pinned repos are listed even if they are private
 
-### Project View
+## Project View
 
 - Handle repository with no commit history
 - Handle repository's who's main branch is not named _main_ (eg. _master_)

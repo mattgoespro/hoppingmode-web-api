@@ -1,4 +1,4 @@
-import { AxiosError } from "axios";
+import { AxiosError, isAxiosError } from "axios";
 import { ClientError } from "graphql-request";
 import { StatusCodes } from "http-status-codes";
 
@@ -37,7 +37,7 @@ export class ApiError extends Error {
    * @returns
    */
   private mapErrorToApiError<T extends Error>(error: T): ApiErrorResponse {
-    if (error instanceof AxiosError) {
+    if (isAxiosError(error)) {
       if (error.response) {
         /**
          * GitHub responded with (5xx, 4xx) error code.

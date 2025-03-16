@@ -10,7 +10,6 @@
     "jeff-hykin.better-dockerfile-syntax",
     "jeff-hykin.better-shellscript-syntax",
     "naumovs.color-highlight",
-    "royaction.color-manager",
     "github.vscode-github-actions",
     "yzhang.markdown-all-in-one",
     "davidanson.vscode-markdownlint",
@@ -26,6 +25,10 @@
     "felipecaputo.git-project-manager",
     "pkief.material-icon-theme",
     "richie5um2.vscode-sort-json",
-    "meganrogge.template-string-converter"
+    "meganrogge.template-string-converter",
+    "graphql.vscode-graphql-syntax",
+    "yoavbls.pretty-ts-errors",
+    "redhat.vscode-yaml",
+    "amodio.tsl-problem-matcher"
   ]
 }

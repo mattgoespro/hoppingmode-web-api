@@ -1,9 +1,11 @@
 import { resolve } from "path";
 import { Configuration } from "webpack";
 import nodeExternals from "webpack-node-externals";
+import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
+import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin";
 
 const config: Configuration = {
-  entry: "./src/index.ts",
+  entry: "./src/app/index.ts",
   mode: "production",
   target: "node",
   output: {
@@ -11,7 +13,8 @@ const config: Configuration = {
     filename: "index.js"
   },
   resolve: {
-    extensions: [".ts"]
+    extensions: [".ts"],
+    plugins: [new TsconfigPathsPlugin()]
   },
   module: {
     rules: [
@@ -28,6 +31,7 @@ const config: Configuration = {
       }
     ]
   },
+  plugins: [new ForkTsCheckerWebpackPlugin()],
   externals: [nodeExternals()]
 };
 
